@@ -6,7 +6,6 @@ interface CommitBody {
   selections: Array<{
     transaction_id: string;
     category: string;
-    business_area: 'CREATIVE' | 'DEVELOPMENT' | 'SUPPORT';
     notes?: string;
   }>;
 }
@@ -33,7 +32,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         amount: Math.abs(source.amount),
         category: s.category,
         date: source.date,
-        business_area: s.business_area,
         notes: s.notes ?? null,
       });
     }

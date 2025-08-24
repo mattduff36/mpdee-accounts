@@ -58,16 +58,15 @@ model InvoiceItem {
 }
 
 model Expense {
-  id            String       @id @default(cuid())
+  id            String   @id @default(cuid())
   description   String
   amount        Float
   category      String
   date          DateTime
-  business_area BusinessArea @default(CREATIVE)
   receipt_url   String?
   notes         String?
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   @@map("expenses")
 }

@@ -20,10 +20,11 @@ export default function ReviewImportPage() {
   const [transactions, setTransactions] = useState<BankTransaction[]>([]);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [categoryById, setCategoryById] = useState<Record<string, string>>({});
-  const [areaById, setAreaById] = useState<Record<string, 'CREATIVE' | 'DEVELOPMENT' | 'SUPPORT'>>({});
   const [notesById, setNotesById] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isAiProcessing, setIsAiProcessing] = useState(false);
 
   const categories = useMemo(() => ['Office Supplies','Travel','Marketing','Equipment','Software','Utilities','Professional Services','Other'], []);
 
@@ -52,15 +53,79 @@ export default function ReviewImportPage() {
     setSelected((s) => ({ ...s, [id]: !s[id] }));
   }
 
+  function toggleAll() {
+    const pendingTransactions = transactions.filter(t => t.status === 'PENDING');
+    const allSelected = pendingTransactions.every(t => selected[t.id]);
+    
+    if (allSelected) {
+      // Deselect all
+      setSelected({});
+    } else {
+      // Select all pending transactions
+      const newSelected: Record<string, boolean> = {};
+      pendingTransactions.forEach(t => {
+        newSelected[t.id] = true;
+      });
+      setSelected(newSelected);
+    }
+  }
+
+  async function categorizeWithAI() {
+    const pendingTransactions = transactions.filter(t => t.status === 'PENDING');
+    if (pendingTransactions.length === 0) {
+      setError('No pending transactions to categorize');
+      return;
+    }
+
+    setIsAiProcessing(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/expenses/ai-categorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transactions: pendingTransactions.map(t => ({
+            id: t.id,
+            description: t.description,
+            amount: t.amount
+          })),
+                     prompt: aiPrompt,
+           categories
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+                 // Update the category mappings with AI suggestions
+         const newCategoryById = { ...categoryById };
+
+         data.data.forEach((suggestion: any) => {
+           if (suggestion.category) {
+             newCategoryById[suggestion.id] = suggestion.category;
+           }
+         });
+
+         setCategoryById(newCategoryById);
+      } else {
+        setError(data.error || 'Failed to categorize with AI');
+      }
+    } catch (err) {
+      console.error('AI categorization error:', err);
+      setError('Failed to categorize with AI');
+    } finally {
+      setIsAiProcessing(false);
+    }
+  }
+
   async function commitSelected() {
     const selections = Object.entries(selected)
       .filter(([, v]) => v)
-      .map(([id]) => ({
-        transaction_id: id,
-        category: categoryById[id] || 'Other',
-        business_area: areaById[id] || 'CREATIVE',
-        notes: notesById[id],
-      }));
+             .map(([id]) => ({
+         transaction_id: id,
+         category: categoryById[id] || 'Other',
+         notes: notesById[id],
+       }));
     if (selections.length === 0) return;
     try {
       const res = await fetch(`/api/expenses/import/${importId}/commit`, {
@@ -91,6 +156,46 @@ export default function ReviewImportPage() {
 
           {error && <div className="mt-4 text-sm text-red-600">{error}</div>}
 
+          {/* AI Categorization Section */}
+          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-medium text-blue-900">AI-Powered Categorization</h3>
+              <button
+                onClick={categorizeWithAI}
+                disabled={isAiProcessing || transactions.filter(t => t.status === 'PENDING').length === 0}
+                className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+              >
+                {isAiProcessing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Processing...
+                  </>
+                ) : (
+                  'Auto-Categorize Transactions'
+                )}
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="ai-prompt" className="block text-sm font-medium text-blue-800 mb-1">
+                  Custom Instructions (Optional)
+                </label>
+                <input
+                  id="ai-prompt"
+                  type="text"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="e.g., Make all transactions containing 'Cursor' a software expense for the 'Development' Area"
+                  className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <p className="text-xs text-blue-700">
+                The AI will analyze transaction descriptions and automatically assign categories and business areas. 
+                Use the custom instructions to provide specific guidance for your business context.
+              </p>
+            </div>
+          </div>
+
           {isLoading ? (
             <div className="mt-8">Loading…</div>
           ) : (
@@ -98,13 +203,19 @@ export default function ReviewImportPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pick</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <input 
+                        type="checkbox" 
+                        checked={transactions.filter(t => t.status === 'PENDING').every(t => selected[t.id]) && transactions.filter(t => t.status === 'PENDING').length > 0}
+                        onChange={toggleAll}
+                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                    </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                     <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -115,24 +226,17 @@ export default function ReviewImportPage() {
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-700">{new Date(t.date).toLocaleDateString('en-GB')}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{t.description}</td>
-                      <td className="px-4 py-2 text-sm text-right tabular-nums">{new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(t.amount)}</td>
+                                             <td className="px-4 py-2 text-sm text-right tabular-nums w-32">{new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(t.amount)}</td>
                       <td className="px-4 py-2">
                         <select className="border rounded px-2 py-1 text-sm" value={categoryById[t.id] || ''} onChange={(e) => setCategoryById((m) => ({ ...m, [t.id]: e.target.value }))}>
                           <option value="">Choose…</option>
                           {categories.map((c) => <option key={c} value={c}>{c}</option>)}
                         </select>
                       </td>
-                      <td className="px-4 py-2">
-                        <select className="border rounded px-2 py-1 text-sm" value={areaById[t.id] || ''} onChange={(e) => setAreaById((m) => ({ ...m, [t.id]: e.target.value as any }))}>
-                          <option value="">Choose…</option>
-                          <option value="CREATIVE">Creative</option>
-                          <option value="DEVELOPMENT">Development</option>
-                          <option value="SUPPORT">Support</option>
-                        </select>
-                      </td>
-                      <td className="px-4 py-2">
-                        <input className="border rounded px-2 py-1 text-sm w-56" placeholder="Optional notes" value={notesById[t.id] || ''} onChange={(e) => setNotesById((m) => ({ ...m, [t.id]: e.target.value }))} />
-                      </td>
+                      
+                                             <td className="px-4 py-2">
+                         <input className="border rounded px-2 py-1 text-sm w-32" placeholder="Optional notes" value={notesById[t.id] || ''} onChange={(e) => setNotesById((m) => ({ ...m, [t.id]: e.target.value }))} />
+                       </td>
                     </tr>
                   ))}
                 </tbody>
