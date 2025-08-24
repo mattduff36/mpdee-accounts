@@ -268,10 +268,10 @@ export default function InvoicesPage() {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => router.push(`/invoices/${invoice.id}`)}
-                              className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors"
+                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors"
                               title={invoice.status === InvoiceStatus.DRAFT ? 'Edit Invoice' : 'View Invoice'}
                             >
-                              <PencilIcon className="h-5 w-5" />
+                              <PencilIcon className="h-6 w-6" />
                             </button>
                             {invoice.status === InvoiceStatus.DRAFT && (
                               <button
@@ -289,40 +289,40 @@ export default function InvoicesPage() {
                                     setError('Failed to send invoice');
                                   }
                                 }}
-                                className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition-colors"
+                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors"
                                 title="Send Invoice"
                               >
-                                <PaperAirplaneIcon className="h-5 w-5" />
+                                <PaperAirplaneIcon className="h-6 w-6" />
                               </button>
                             )}
                             {(invoice.status === InvoiceStatus.SENT || invoice.status === InvoiceStatus.OVERDUE) && (
                               <button
                                 onClick={() => handleMarkAsPaid(invoice.id)}
                                 disabled={updatingStatusId === invoice.id}
-                                className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Mark as Paid"
                               >
                                 {updatingStatusId === invoice.id ? (
-                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
+                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
                                 ) : (
-                                  <CheckCircleIcon className="h-5 w-5" />
+                                  <CheckCircleIcon className="h-6 w-6" />
                                 )}
                               </button>
                             )}
                             <button
                               onClick={() => window.open(`/api/invoices/${invoice.id}/pdf`, '_blank')}
-                              className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                              className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors"
                               title="Download PDF"
                             >
-                              <ArrowDownTrayIcon className="h-5 w-5" />
+                              <ArrowDownTrayIcon className="h-6 w-6" />
                             </button>
                             {invoice.status === InvoiceStatus.DRAFT && (
                               <button
                                 onClick={() => setDeleteInvoiceId(invoice.id)}
-                                className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                                className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors"
                                 title="Delete Invoice"
                               >
-                                <TrashIcon className="h-5 w-5" />
+                                <TrashIcon className="h-6 w-6" />
                               </button>
                             )}
                           </div>
