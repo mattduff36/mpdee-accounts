@@ -52,10 +52,11 @@ export default function Navigation() {
           <div className="flex items-center">
             <Link href="/" className="inline-flex items-center">
               <img
-                src="/images/logo-trans.png"
+                src="/images/favicon/android-chrome-192x192.png"
                 alt="MPDEE Accounts"
                 className="h-8 w-auto"
               />
+              <span className="ml-2 text-xl font-semibold text-gray-900">Accounts</span>
             </Link>
           </div>
 
