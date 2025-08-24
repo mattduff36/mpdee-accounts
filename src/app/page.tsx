@@ -223,10 +223,10 @@ export default function AccountsDashboard() {
                     <span className="rounded-lg inline-flex p-2 bg-indigo-100 text-indigo-700 mr-3">
                       <PlusCircleIcon className="h-5 w-5" />
                     </span>
-                    <h3 className="text-sm font-medium text-indigo-900">
-                      <span className="absolute inset-0" aria-hidden="true" />
-                      Add New Client
-                    </h3>
+                                         <h3 className="text-base font-medium text-indigo-900">
+                       <span className="absolute inset-0" aria-hidden="true" />
+                       Add New Client
+                     </h3>
                   </div>
                 </Link>
 
@@ -238,10 +238,10 @@ export default function AccountsDashboard() {
                     <span className="rounded-lg inline-flex p-2 bg-green-100 text-green-700 mr-3">
                       <DocumentTextIcon className="h-5 w-5" />
                     </span>
-                    <h3 className="text-sm font-medium text-green-900">
-                      <span className="absolute inset-0" aria-hidden="true" />
-                      Create Invoice
-                    </h3>
+                                         <h3 className="text-base font-medium text-green-900">
+                       <span className="absolute inset-0" aria-hidden="true" />
+                       Create Invoice
+                     </h3>
                   </div>
                 </Link>
 
@@ -253,10 +253,10 @@ export default function AccountsDashboard() {
                     <span className="rounded-lg inline-flex p-2 bg-orange-100 text-orange-700 mr-3">
                       <ClipboardDocumentListIcon className="h-5 w-5" />
                     </span>
-                    <h3 className="text-sm font-medium text-orange-900">
-                      <span className="absolute inset-0" aria-hidden="true" />
-                      Track Expenses
-                    </h3>
+                                         <h3 className="text-base font-medium text-orange-900">
+                       <span className="absolute inset-0" aria-hidden="true" />
+                       Track Expenses
+                     </h3>
                   </div>
                 </Link>
               </div>
