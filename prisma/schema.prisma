@@ -11,17 +11,15 @@ datasource db {
 }
 
 model Client {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
-  email           String   @unique
+  email           String    @unique
   phone           String?
   billing_address String?
   notes           String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  // Relations
-  invoices Invoice[]
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  invoices        Invoice[]
 
   @@map("clients")
 }
@@ -30,64 +28,47 @@ model Invoice {
   id             String        @id @default(cuid())
   client_id      String
   invoice_number String        @unique
-  status         InvoiceStatus @default(DRAFT)
+  status         InvoiceStatus @default("DRAFT")
   total_amount   Float         @default(0)
   sent_date      DateTime?
   due_date       DateTime?
   paid_date      DateTime?
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
-
-  // Relations
-  client Client        @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  items  InvoiceItem[]
+  items          InvoiceItem[]
+  client         Client        @relation(fields: [client_id], references: [id], onDelete: Cascade)
 
   @@map("invoices")
 }
 
 model InvoiceItem {
-  id                String   @id @default(cuid())
+  id                String       @id @default(cuid())
   invoice_id        String
   description       String
   quantity          Float
   rate              Float
   total             Float
-  agency_commission Float    @default(0)
-  business_area     BusinessArea @default(CREATIVE)
-  created_at        DateTime @default(now())
-
-  // Relations
-  invoice Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  agency_commission Float        @default(0)
+  business_area     BusinessArea @default("CREATIVE")
+  created_at        DateTime     @default(now())
+  invoice           Invoice      @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
 
   @@map("invoice_items")
 }
 
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  PAID
-  OVERDUE
-}
-
 model Expense {
-  id          String   @id @default(cuid())
-  description String
-  amount      Float
-  category    String
-  date        DateTime
-  business_area BusinessArea @default(CREATIVE)
-  receipt_url String?
-  notes       String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id            String       @id @default(cuid())
+  description   String
+  amount        Float
+  category      String
+  date          DateTime
+  business_area BusinessArea @default("CREATIVE")
+  receipt_url   String?
+  notes         String?
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
 
   @@map("expenses")
-}
-
-enum BusinessArea {
-  CREATIVE
-  DEVELOPMENT
-  SUPPORT
 }
 
 /// Bank statement CSV imports and parsed transactions
@@ -101,18 +82,30 @@ model BankStatementImport {
 }
 
 model BankTransaction {
-  id          String               @id @default(cuid())
+  id          String              @id @default(cuid())
   import_id   String
   date        DateTime
   description String
   amount      Float
   raw         Json?
-  status      TransactionStatus    @default(PENDING)
+  status      TransactionStatus   @default("PENDING")
   expense_id  String?
-
-  import      BankStatementImport  @relation(fields: [import_id], references: [id], onDelete: Cascade)
+  import      BankStatementImport @relation(fields: [import_id], references: [id], onDelete: Cascade)
 
   @@map("bank_transactions")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+enum BusinessArea {
+  CREATIVE
+  DEVELOPMENT
+  SUPPORT
 }
 
 enum TransactionStatus {
