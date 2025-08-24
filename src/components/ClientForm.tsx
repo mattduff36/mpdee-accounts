@@ -181,11 +181,19 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
             <div className="flex items-center space-x-4">
               {imagePreview && (
                 <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Client preview"
-                    className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
-                  />
+                  <div className="h-16 w-16 rounded-full overflow-hidden flex items-center justify-center bg-gray-100 border-2 border-gray-200">
+                    <img
+                      src={imagePreview}
+                      alt="Client preview"
+                      className="object-contain"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        width: 'auto',
+                        height: 'auto'
+                      }}
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={removeImage}

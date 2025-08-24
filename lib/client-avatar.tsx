@@ -57,7 +57,7 @@ export function ClientAvatar({ client, size = 'md', className = '' }: ClientAvat
           <img
             src={client.image_url}
             alt={`${client.name} avatar`}
-            className="w-full h-full object-contain"
+            className="object-contain"
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
