@@ -26,9 +26,9 @@ export default function Footer() {
     <footer className="bg-white border-t border-gray-200 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex flex-col sm:flex-row justify-between items-center">
-          <div className="text-sm text-gray-600 mb-2 sm:mb-0">
-            MPDEE Accounts designed by MPDEE Development © 2025 - All rights reserved.
-          </div>
+                     <div className="text-sm text-gray-600 mb-2 sm:mb-0">
+             Designed by MPDEE Development © 2025 - All rights reserved.
+           </div>
           <div className="text-sm text-gray-500">
             Last logged in on {lastLoginDate}
           </div>
