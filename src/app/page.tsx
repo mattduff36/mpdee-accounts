@@ -214,22 +214,22 @@ export default function AccountsDashboard() {
               <h3 className="text-base sm:text-lg leading-6 font-medium text-gray-900 mb-3 sm:mb-4">
                 Quick Actions
               </h3>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <Link
                   href="/clients/new"
-                  className="relative group bg-white p-4 sm:p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="relative group bg-indigo-50 p-3 sm:p-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow hover:shadow-md transition-shadow"
                 >
                   <div>
-                    <span className="rounded-lg inline-flex p-2 sm:p-3 bg-indigo-50 text-indigo-700 ring-4 ring-white">
-                      <PlusCircleIcon className="h-6 w-6" />
+                    <span className="rounded-lg inline-flex p-2 bg-indigo-100 text-indigo-700">
+                      <PlusCircleIcon className="h-5 w-5" />
                     </span>
                   </div>
-                  <div className="mt-4 sm:mt-8">
-                    <h3 className="text-sm sm:text-lg font-medium">
+                  <div className="mt-3">
+                    <h3 className="text-sm font-medium text-indigo-900">
                       <span className="absolute inset-0" aria-hidden="true" />
                       Add New Client
                     </h3>
-                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
+                    <p className="mt-1 text-xs text-indigo-700">
                       Create a new client record for invoicing
                     </p>
                   </div>
@@ -237,19 +237,19 @@ export default function AccountsDashboard() {
 
                 <Link
                   href="/expenses"
-                  className="relative group bg-white p-4 sm:p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-orange-500 rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="relative group bg-orange-50 p-3 sm:p-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-orange-500 rounded-lg shadow hover:shadow-md transition-shadow"
                 >
                   <div>
-                    <span className="rounded-lg inline-flex p-2 sm:p-3 bg-orange-50 text-orange-700 ring-4 ring-white">
-                      <ClipboardDocumentListIcon className="h-6 w-6" />
+                    <span className="rounded-lg inline-flex p-2 bg-orange-100 text-orange-700">
+                      <ClipboardDocumentListIcon className="h-5 w-5" />
                     </span>
                   </div>
-                  <div className="mt-4 sm:mt-8">
-                    <h3 className="text-sm sm:text-lg font-medium">
+                  <div className="mt-3">
+                    <h3 className="text-sm font-medium text-orange-900">
                       <span className="absolute inset-0" aria-hidden="true" />
                       Track Expenses
                     </h3>
-                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
+                    <p className="mt-1 text-xs text-orange-700">
                       Record and manage business expenses
                     </p>
                   </div>
@@ -257,19 +257,19 @@ export default function AccountsDashboard() {
 
                 <Link
                   href="/invoices/new"
-                  className="relative group bg-white p-4 sm:p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="relative group bg-green-50 p-3 sm:p-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-500 rounded-lg shadow hover:shadow-md transition-shadow"
                 >
                   <div>
-                    <span className="rounded-lg inline-flex p-2 sm:p-3 bg-green-50 text-green-700 ring-4 ring-white">
-                      <DocumentTextIcon className="h-6 w-6" />
+                    <span className="rounded-lg inline-flex p-2 bg-green-100 text-green-700">
+                      <DocumentTextIcon className="h-5 w-5" />
                     </span>
                   </div>
-                  <div className="mt-4 sm:mt-8">
-                    <h3 className="text-sm sm:text-lg font-medium">
+                  <div className="mt-3">
+                    <h3 className="text-sm font-medium text-green-900">
                       <span className="absolute inset-0" aria-hidden="true" />
                       Create Invoice
                     </h3>
-                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
+                    <p className="mt-1 text-xs text-green-700">
                       Generate a new invoice for a client
                     </p>
                   </div>
