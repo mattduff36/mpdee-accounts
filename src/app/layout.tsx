@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
+import Footer from '../components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -71,10 +72,11 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">
-          <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className="flex-1 max-w-7xl mx-auto w-full">
             {children}
           </div>
+          <Footer />
         </div>
       </body>
     </html>
