@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navigation from '../components/Navigation';
 import { UsersIcon, DocumentTextIcon, CurrencyPoundIcon, PlusCircleIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import Footer from '../components/Footer';
 
 interface DashboardStats {
   totalClients: number;
@@ -94,8 +95,9 @@ export default function AccountsDashboard() {
     <>
       <Navigation />
       
-      <div className="pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1 pt-20 pb-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="md:flex md:items-center md:justify-between">
             <div className="flex-1 min-w-0">
               <h2 className="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
@@ -260,10 +262,11 @@ export default function AccountsDashboard() {
                   </div>
                 </Link>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+                         </div>
+           </div>
+         </div>
+       </div>
+       <Footer />
+     </>
+   );
 } 

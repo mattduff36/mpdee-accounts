@@ -43,6 +43,14 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       const data = await response.json();
 
       if (data.success) {
+        // Set last login date
+        const currentDate = new Date().toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+        localStorage.setItem('lastLoginDate', currentDate);
+        
         if (onSuccess) {
           onSuccess();
         } else {
