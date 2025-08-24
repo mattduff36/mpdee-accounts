@@ -30,7 +30,7 @@ export async function PUT(
     await requireAuth();
     const { id } = await params;
     const body = await request.json();
-    const { description, amount, category, date, receipt_url, notes, business_area } = body;
+    const { description, amount, category, date, receipt_url, notes } = body;
     if (!description || amount == null || !category || !date) {
       return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
     }
@@ -44,7 +44,7 @@ export async function PUT(
         category,
         date: new Date(date),
         receipt_url: receipt_url || null,
-        business_area: business_area || 'CREATIVE',
+
         notes: notes || null,
       },
     });

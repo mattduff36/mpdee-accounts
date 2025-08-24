@@ -33,18 +33,20 @@ interface ClientAvatarProps {
     name: string;
     image_url?: string | null;
   };
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 export function ClientAvatar({ client, size = 'md', className = '' }: ClientAvatarProps) {
   const sizeClasses = {
+    xs: 'h-6 w-6',
     sm: 'h-8 w-8',
     md: 'h-10 w-10',
     lg: 'h-12 w-12'
   };
 
   const textSizeClasses = {
+    xs: 'text-xs',
     sm: 'text-xs',
     md: 'text-sm',
     lg: 'text-base'
@@ -59,8 +61,8 @@ export function ClientAvatar({ client, size = 'md', className = '' }: ClientAvat
             alt={`${client.name} avatar`}
             className="w-full h-full object-contain"
             style={{
-              width: '40px',
-              height: '40px',
+              width: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px',
+              height: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px',
               objectFit: 'contain'
             }}
           />
@@ -89,8 +91,8 @@ export function ClientAvatar({ client, size = 'md', className = '' }: ClientAvat
                            getClientAvatarColor(client.name) === 'bg-sky-500' ? '#0ea5e9' :
                            getClientAvatarColor(client.name) === 'bg-lime-500' ? '#84cc16' :
                            getClientAvatarColor(client.name) === 'bg-red-500' ? '#ef4444' : '#f43f5e',
-          width: size === 'md' ? '40px' : size === 'sm' ? '32px' : '48px',
-          height: size === 'md' ? '40px' : size === 'sm' ? '32px' : '48px'
+          width: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px',
+          height: size === 'xs' ? '24px' : size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px'
         }}
       >
         <span className={`${textSizeClasses[size]} font-medium text-white`}>

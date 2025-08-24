@@ -5,11 +5,17 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navigation from '../components/Navigation';
 import { UsersIcon, DocumentTextIcon, CurrencyPoundIcon, PlusCircleIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { ClientAvatar } from '@/lib/client-avatar';
 
 interface DashboardStats {
   totalClients: number;
   totalInvoices: number;
   outstandingAmount: number;
+  outstandingClients: Array<{
+    id: string;
+    name: string;
+    image_url: string | null;
+  }>;
 }
 
 export default function AccountsDashboard() {
@@ -186,11 +192,29 @@ export default function AccountsDashboard() {
                           <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
                             Outstanding Amount
                           </dt>
-                          <dd className="text-base sm:text-lg font-medium text-gray-900">
+                          <dd className="text-base sm:text-lg font-medium text-gray-900 flex items-center gap-2">
                             {statsLoading ? (
                               <div className="animate-pulse h-6 w-16 bg-gray-200 rounded"></div>
                             ) : (
-                              formatCurrency(stats?.outstandingAmount || 0)
+                              <>
+                                {formatCurrency(stats?.outstandingAmount || 0)}
+                                {stats?.outstandingClients && stats.outstandingClients.length > 0 && (
+                                  <div className="flex -space-x-2">
+                                                                         {stats.outstandingClients.slice(0, 3).map((client) => (
+                                       <ClientAvatar 
+                                         key={client.id} 
+                                         client={client} 
+                                         size="xs" 
+                                       />
+                                     ))}
+                                     {stats.outstandingClients.length > 3 && (
+                                       <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs text-gray-600 font-medium">
+                                         +{stats.outstandingClients.length - 3}
+                                       </div>
+                                     )}
+                                  </div>
+                                )}
+                              </>
                             )}
                           </dd>
                         </dl>
@@ -262,6 +286,6 @@ export default function AccountsDashboard() {
             </div>
           </div>
         </div>
-      </>
-    );
+    </>
+  );
 } 

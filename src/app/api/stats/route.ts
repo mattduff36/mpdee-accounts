@@ -7,6 +7,11 @@ interface DashboardStats {
   totalClients: number;
   totalInvoices: number;
   outstandingAmount: number;
+  outstandingClients: Array<{
+    id: string;
+    name: string;
+    image_url: string | null;
+  }>;
 }
 
 // GET /api/stats - Get dashboard statistics
@@ -21,7 +26,7 @@ export async function GET() {
     // Get total invoices count
     const totalInvoices = await prisma.invoice.count();
 
-    // Get outstanding amount (invoices that are SENT or OVERDUE)
+    // Get outstanding amount and client info (invoices that are SENT or OVERDUE)
     const outstandingInvoices = await prisma.invoice.findMany({
       where: {
         status: {
@@ -29,7 +34,14 @@ export async function GET() {
         }
       },
       select: {
-        total_amount: true
+        total_amount: true,
+        client: {
+          select: {
+            id: true,
+            name: true,
+            image_url: true
+          }
+        }
       }
     });
 
@@ -38,10 +50,18 @@ export async function GET() {
       0
     );
 
+    // Get unique clients with outstanding invoices
+    const outstandingClients = outstandingInvoices
+      .map(invoice => invoice.client)
+      .filter((client, index, self) => 
+        index === self.findIndex(c => c.id === client.id)
+      );
+
     const stats: DashboardStats = {
       totalClients,
       totalInvoices,
       outstandingAmount,
+      outstandingClients,
     };
 
     const response: ApiResponse<DashboardStats> = {
