@@ -267,7 +267,7 @@ export default function InvoicesPage() {
                           </div>
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => router.push(`/accounts/invoices/${invoice.id}`)}
+                              onClick={() => router.push(`/invoices/${invoice.id}`)}
                               className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors"
                               title={invoice.status === InvoiceStatus.DRAFT ? 'Edit Invoice' : 'View Invoice'}
                             >
