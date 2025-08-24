@@ -53,16 +53,15 @@ export function ClientAvatar({ client, size = 'md', className = '' }: ClientAvat
   if (client.image_url) {
     return (
       <div className={`flex-shrink-0 ${sizeClasses[size]} ${className}`}>
-        <div className={`${sizeClasses[size]} rounded-full overflow-hidden flex items-center justify-center bg-gray-100`}>
+        <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-gray-100`}>
           <img
             src={client.image_url}
             alt={`${client.name} avatar`}
-            className="object-contain"
+            className="w-full h-full object-contain"
             style={{
-              maxWidth: '100%',
-              maxHeight: '100%',
-              width: 'auto',
-              height: 'auto'
+              width: '40px',
+              height: '40px',
+              objectFit: 'contain'
             }}
           />
         </div>
