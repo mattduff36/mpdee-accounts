@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "postinstall": "prisma generate",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "clear-data": "node prisma/clear-data.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
