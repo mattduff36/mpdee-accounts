@@ -88,7 +88,9 @@ export function ClientAvatar({ client, size = 'md', className = '' }: ClientAvat
                            getClientAvatarColor(client.name) === 'bg-violet-500' ? '#8b5cf6' :
                            getClientAvatarColor(client.name) === 'bg-sky-500' ? '#0ea5e9' :
                            getClientAvatarColor(client.name) === 'bg-lime-500' ? '#84cc16' :
-                           getClientAvatarColor(client.name) === 'bg-red-500' ? '#ef4444' : '#f43f5e'
+                           getClientAvatarColor(client.name) === 'bg-red-500' ? '#ef4444' : '#f43f5e',
+          width: size === 'md' ? '40px' : size === 'sm' ? '32px' : '48px',
+          height: size === 'md' ? '40px' : size === 'sm' ? '32px' : '48px'
         }}
       >
         <span className={`${textSizeClasses[size]} font-medium text-white`}>
