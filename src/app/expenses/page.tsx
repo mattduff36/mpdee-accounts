@@ -38,7 +38,7 @@ export default function ExpensesPage() {
         setExpenses(data.data as Expense[]);
         setTotal(data.total as number);
       } else if (res.status === 401) {
-        window.location.href = '/accounts/login';
+        window.location.href = '/login';
       } else {
         setError(data.error || 'Failed to load expenses');
       }
@@ -62,7 +62,7 @@ export default function ExpensesPage() {
         // Refresh the expenses list
         fetchExpenses();
       } else if (res.status === 401) {
-        window.location.href = '/accounts/login';
+        window.location.href = '/login';
       } else {
         setError(data.error || 'Failed to delete expense');
       }
@@ -169,7 +169,7 @@ export default function ExpensesPage() {
                         </div>
                         <div className="flex items-center space-x-2 ml-4">
                           <Link
-                            href={`/accounts/expenses/${exp.id}`}
+                            href={`/expenses/${exp.id}`}
                             className="text-indigo-600 hover:text-indigo-900 p-1"
                             title="Edit expense"
                           >

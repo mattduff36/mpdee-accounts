@@ -16,6 +16,7 @@ export interface Client {
   phone: string | null;
   billing_address: string | null;
   notes: string | null;
+  image_url: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -75,6 +76,7 @@ export interface ClientFormData {
   phone?: string;
   billing_address?: string;
   notes?: string;
+  image_url?: string;
 }
 
 export interface InvoiceFormData {

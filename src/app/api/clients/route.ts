@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     await requireAuth();
 
     const body = await request.json();
-    const { name, email, phone, billing_address, notes }: ClientFormData = body;
+    const { name, email, phone, billing_address, notes, image_url }: ClientFormData = body;
 
     // Validate required fields
     if (!name || !email) {
@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
         phone: phone || null,
         billing_address: billing_address || null,
         notes: notes || null,
+        image_url: image_url || null,
       },
     });
 

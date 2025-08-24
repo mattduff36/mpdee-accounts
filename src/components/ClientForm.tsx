@@ -17,7 +17,9 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
     phone: '',
     billing_address: '',
     notes: '',
+    image_url: '',
   });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -31,7 +33,11 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
         phone: client.phone || '',
         billing_address: client.billing_address || '',
         notes: client.notes || '',
+        image_url: client.image_url || '',
       });
+      if (client.image_url) {
+        setImagePreview(client.image_url);
+      }
     }
   }, [client]);
 
@@ -45,6 +51,23 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
     if (error) setError('');
   };
 
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      image_url: url,
+    }));
+    setImagePreview(url);
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData(prev => ({
+      ...prev,
+      image_url: '',
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -54,12 +77,18 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
       const url = client ? `/api/clients/${client.id}` : '/api/clients';
       const method = client ? 'PUT' : 'POST';
 
+      // Prepare the data to send
+      const dataToSend = {
+        ...formData,
+        image_url: formData.image_url || null,
+      };
+
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       const data = await response.json();
@@ -141,6 +170,47 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
                 onChange={handleChange}
                 disabled={isLoading}
               />
+            </div>
+          </div>
+
+          {/* Client Image URL */}
+          <div>
+            <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">
+              Client Image URL
+            </label>
+            <div className="flex items-center space-x-4">
+              {imagePreview && (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Client preview"
+                    className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+              <div className="flex-1">
+                <input
+                  type="url"
+                  id="image_url"
+                  name="image_url"
+                  className="mt-1 block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="https://example.com/client-image.jpg"
+                  value={formData.image_url}
+                  onChange={handleImageUrlChange}
+                  disabled={isLoading}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Paste a URL to an image online. Will be used as avatar in lists.
+                </p>
+              </div>
             </div>
           </div>
 

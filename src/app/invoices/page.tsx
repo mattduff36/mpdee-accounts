@@ -11,6 +11,7 @@ import {
   TrashIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
+import { ClientAvatar } from '@/lib/client-avatar';
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([]);
@@ -229,13 +230,7 @@ export default function InvoicesPage() {
                       <div className="px-4 py-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                              <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
-                                <span className="text-sm font-medium text-white">
-                                  #
-                                </span>
-                              </div>
-                            </div>
+                            <ClientAvatar client={invoice.client} />
                             <div className="ml-4">
                               <div className="flex items-center">
                                 <p className="text-sm font-medium text-gray-900">

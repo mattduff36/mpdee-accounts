@@ -23,7 +23,7 @@ export default function ImportExpensesPage() {
       const res = await fetch('/api/expenses/import', { method: 'POST', body: form });
       const data = await res.json();
       if (res.ok && data.success) {
-        router.push(`/accounts/expenses/import/${data.data.import_id}`);
+        router.push(`/expenses/import/${data.data.import_id}`);
       } else {
         setError(data.error || 'Upload failed');
       }

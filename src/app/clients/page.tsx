@@ -8,6 +8,7 @@ import {
   PencilIcon, 
   TrashIcon 
 } from '@heroicons/react/24/outline';
+import { ClientAvatar } from '@/lib/client-avatar';
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -151,13 +152,7 @@ export default function ClientsPage() {
                     <li key={client.id}>
                       <div className="px-4 py-4 flex items-center justify-between">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
-                              <span className="text-sm font-medium text-white">
-                                {client.name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          </div>
+                          <ClientAvatar client={client} />
                           <div className="ml-4">
                             <div className="flex items-center">
                               <p className="text-sm font-medium text-gray-900 truncate">
@@ -184,7 +179,7 @@ export default function ClientsPage() {
                         </div>
                         <div className="flex items-center space-x-3">
                           <button
-                            onClick={() => router.push(`/accounts/clients/${client.id}`)}
+                            onClick={() => router.push(`/clients/${client.id}`)}
                             className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors"
                             title="Edit Client"
                           >

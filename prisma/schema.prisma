@@ -17,6 +17,7 @@ model Client {
   phone           String?
   billing_address String?
   notes           String?
+  image_url       String?
   created_at      DateTime  @default(now())
   updated_at      DateTime  @updatedAt
   invoices        Invoice[]
@@ -28,7 +29,7 @@ model Invoice {
   id             String        @id @default(cuid())
   client_id      String
   invoice_number String        @unique
-  status         InvoiceStatus @default("DRAFT")
+  status         InvoiceStatus @default(DRAFT)
   total_amount   Float         @default(0)
   sent_date      DateTime?
   due_date       DateTime?
@@ -49,7 +50,7 @@ model InvoiceItem {
   rate              Float
   total             Float
   agency_commission Float        @default(0)
-  business_area     BusinessArea @default("CREATIVE")
+  business_area     BusinessArea @default(CREATIVE)
   created_at        DateTime     @default(now())
   invoice           Invoice      @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
 
@@ -62,7 +63,7 @@ model Expense {
   amount        Float
   category      String
   date          DateTime
-  business_area BusinessArea @default("CREATIVE")
+  business_area BusinessArea @default(CREATIVE)
   receipt_url   String?
   notes         String?
   created_at    DateTime     @default(now())
@@ -88,7 +89,7 @@ model BankTransaction {
   description String
   amount      Float
   raw         Json?
-  status      TransactionStatus   @default("PENDING")
+  status      TransactionStatus   @default(PENDING)
   expense_id  String?
   import      BankStatementImport @relation(fields: [import_id], references: [id], onDelete: Cascade)
 
