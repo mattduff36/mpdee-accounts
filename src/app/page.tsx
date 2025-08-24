@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navigation from '../components/Navigation';
-import { UsersIcon, DocumentTextIcon, CurrencyPoundIcon, BanknotesIcon, PlusCircleIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { UsersIcon, DocumentTextIcon, CurrencyPoundIcon, PlusCircleIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 interface DashboardStats {
   totalClients: number;
   totalInvoices: number;
   outstandingAmount: number;
-  totalExpenses: number;
 }
 
 export default function AccountsDashboard() {
@@ -106,7 +105,7 @@ export default function AccountsDashboard() {
           </div>
 
           <div className="mt-8">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {/* Quick Stats Cards */}
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-4 sm:p-5">
@@ -207,38 +206,7 @@ export default function AccountsDashboard() {
                 </div>
               </div>
 
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-4 sm:p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <div className="w-9 h-9 bg-orange-100 text-orange-600 rounded-md flex items-center justify-center">
-                        <BanknotesIcon className="h-5 w-5" />
-                      </div>
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                          Total Expenses
-                        </dt>
-                        <dd className="text-base sm:text-lg font-medium text-gray-900">
-                          {statsLoading ? (
-                            <div className="animate-pulse h-6 w-8 bg-gray-200 rounded"></div>
-                          ) : (
-                            stats?.totalExpenses || 0
-                          )}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 px-5 py-3">
-                  <div className="text-sm">
-                    <Link href="/expenses" className="font-medium text-orange-700 hover:text-orange-900">
-                      View all expenses
-                    </Link>
-                  </div>
-                </div>
-              </div>
+
             </div>
 
             {/* Quick Actions */}
