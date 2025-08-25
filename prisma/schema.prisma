@@ -56,7 +56,7 @@ model InvoiceItem {
   agency_commission Float        @default(0)
   business_area     BusinessArea @default(CREATIVE)
   created_at        DateTime     @default(now())
-  updated_at        DateTime?
+  updated_at        DateTime     @updatedAt
   invoice           Invoice      @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
 
   @@map("invoice_items")

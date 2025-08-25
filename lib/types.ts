@@ -48,7 +48,7 @@ export interface InvoiceItem {
   agency_commission: number;
   business_area: BusinessArea;
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: Date;
 }
 
 
