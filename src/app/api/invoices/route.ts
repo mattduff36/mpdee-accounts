@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     // Normalize numeric fields that may arrive as empty strings from the UI
     const normalizedItems = (items || []).map((item) => {
-      const quantity = typeof item.quantity === 'number' ? item.quantity : parseFloat(String(item.quantity)) || 0;
+      const quantity = typeof item.quantity === 'number' ? Math.round(item.quantity) : Math.round(parseFloat(String(item.quantity)) || 0);
       const rate = typeof item.rate === 'number' ? item.rate : parseFloat(String(item.rate)) || 0;
       const agency_commission = typeof item.agency_commission === 'number' ? item.agency_commission : parseFloat(String(item.agency_commission)) || 0;
       return { ...item, quantity, rate, agency_commission } as typeof item & { quantity: number; rate: number; agency_commission: number };

@@ -48,7 +48,7 @@ model InvoiceItem {
   id                String       @id @default(cuid())
   invoice_id        String
   description       String
-  quantity          Float
+  quantity          Int
   unit_price        Float
   total_price       Float
   rate              Float?
