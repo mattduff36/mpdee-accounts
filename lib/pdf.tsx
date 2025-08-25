@@ -167,8 +167,8 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
       // Draw other columns (centered vertically in the row)
       const centerY = yPos + (actualRowHeight / 2) + 1;
       doc.text(item.quantity.toString(), 125, centerY, { align: 'center' });
-      doc.text(formatCurrency(item.rate), 150, centerY, { align: 'center' });
-      doc.text(formatCurrency(item.total), 185, centerY, { align: 'right' });
+      doc.text(formatCurrency(item.unit_price), 150, centerY, { align: 'center' });
+      doc.text(formatCurrency(item.total_price), 185, centerY, { align: 'right' });
       
       yPos += actualRowHeight;
     });

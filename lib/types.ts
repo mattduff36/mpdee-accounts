@@ -39,11 +39,14 @@ export interface InvoiceItem {
   invoice_id: string;
   description: string;
   quantity: number;
-  rate: number;
-  total: number;
+  unit_price: number;
+  total_price: number;
+  rate: number | null;
+  total: number | null;
   agency_commission: number;
   business_area: BusinessArea;
   created_at: Date;
+  updated_at: Date | null;
 }
 
 
