@@ -11,6 +11,7 @@ A professional accounting and invoice management system for MPDEE Creative. Buil
 - **Email Integration**: Send invoices directly to clients via email
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Modern Technology**: Built with Next.js 15, React, TypeScript, and Prisma
+- **Cloud Database**: PostgreSQL database hosted on Supabase for production reliability
 
 ## Core Functionality
 
@@ -68,8 +69,24 @@ Create a `.env.local` file with the following variables:
 ADMIN_USERNAME=your_admin_username
 ADMIN_PASSWORD=your_secure_password
 
-# Database
+# Database (Local Development)
 DATABASE_URL="file:./dev.db"
+
+# Production Database (Supabase)
+POSTGRES_PRISMA_URL="postgres://..."
+POSTGRES_URL="postgres://..."
+POSTGRES_USER="postgres"
+POSTGRES_HOST="db.xxx.supabase.co"
+POSTGRES_PASSWORD="your_password"
+POSTGRES_DATABASE="postgres"
+POSTGRES_URL_NON_POOLING="postgres://..."
+
+# Supabase Configuration
+SUPABASE_URL="https://xxx.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"
+SUPABASE_JWT_SECRET="your_jwt_secret"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your_anon_key"
+SUPABASE_SERVICE_ROLE_KEY="your_service_role_key"
 
 # Email (Google SMTP)
 EMAIL_HOST=smtp.gmail.com
@@ -84,6 +101,7 @@ JWT_SECRET=your_jwt_secret_key
 
 ### Database Setup
 
+#### Local Development (SQLite)
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -94,6 +112,9 @@ npx prisma migrate dev
 # (Optional) View database in Prisma Studio
 npx prisma studio
 ```
+
+#### Production (PostgreSQL/Supabase)
+The production environment uses Supabase PostgreSQL. The database schema and data have been migrated from SQLite to PostgreSQL.
 
 ### Development
 
@@ -117,7 +138,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - **Frontend**: Next.js 15 with App Router, React 18, TypeScript
 - **Styling**: Tailwind CSS, Shadcn UI components
-- **Database**: SQLite with Prisma ORM
+- **Database**: 
+  - Local Development: SQLite with Prisma ORM
+  - Production: PostgreSQL (Supabase) with Prisma ORM
 - **Authentication**: JWT with secure cookies
 - **Email**: Nodemailer with Google SMTP
 - **PDF Generation**: React-PDF
@@ -149,6 +172,8 @@ mpdee-accounts/
 │   ├── pdf.tsx               # PDF generation
 │   └── types.ts              # TypeScript definitions
 ├── prisma/                   # Database schema and migrations
+├── scripts/                  # Database migration and utility scripts
+├── database-backup/          # Local database backups
 ├── public/                   # Static assets
 └── tasks/                    # Project documentation
 ```
@@ -197,6 +222,22 @@ mpdee-accounts/
 - SQL injection prevention with Prisma ORM
 - XSS protection with React's built-in escaping
 
+## Database Migration
+
+The application has been successfully migrated from SQLite to PostgreSQL (Supabase) for production use. The migration included:
+
+- **2 Clients** - All client data preserved
+- **2 Invoices** - Complete invoice records with line items
+- **5 Invoice Items** - Detailed line items for all invoices
+- **70 Expenses** - All business expenses with categories
+
+### Migration Scripts
+
+The `scripts/` directory contains migration utilities:
+- Database backup and restore scripts
+- SQLite to PostgreSQL migration tools
+- Data verification and validation scripts
+
 ## Deployment
 
 This project is configured for deployment on Vercel with the domain `https://accounts.mpdee.info/`.
@@ -211,9 +252,16 @@ npm run build
 vercel --prod
 ```
 
+### Production Status
+
+✅ **Live Site**: https://accounts.mpdee.info/  
+✅ **Database**: PostgreSQL (Supabase)  
+✅ **Data Migration**: Complete  
+✅ **All Features**: Operational  
+
 ## License
 
 © 2025 MPDEE Creative. All rights reserved.
 
 ## Last Updated
-January 2025 - MPDEE Accounts transformation completed 
+August 2025 - Database migration to PostgreSQL completed successfully 
