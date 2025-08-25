@@ -65,12 +65,13 @@ export interface InvoiceWithClient extends Invoice {
   client: Client;
 }
 
-export enum RecurrenceFrequency {
-  WEEKLY = 'weekly',
-  MONTHLY = 'monthly',
-  QUARTERLY = 'quarterly',
-  YEARLY = 'yearly'
-}
+// Unused enum - commented out to fix warnings
+// export enum RecurrenceFrequency {
+//   WEEKLY = 'weekly',
+//   MONTHLY = 'monthly',
+//   QUARTERLY = 'quarterly',
+//   YEARLY = 'yearly'
+// }
 
 // Form types
 export interface ClientFormData {

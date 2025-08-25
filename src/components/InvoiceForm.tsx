@@ -59,7 +59,7 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
         items: invoice.items.map(item => ({
           description: item.description,
           quantity: item.quantity,
-          rate: item.rate,
+          rate: item.rate || item.unit_price || '',
           agency_commission: item.agency_commission || 0,
           business_area: item.business_area || 'CREATIVE',
         })),

@@ -210,7 +210,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     const leftColumnX = 25;
     const paymentRightColumnX = 115;
     let leftYPos = yPos + 2; // Add small top padding
-    let rightYPos = yPos + 2; // Add small top padding
+    // let rightYPos = yPos + 2; // Add small top padding - unused variable
 
     // Left column - Beneficiary and account details
     doc.setFontSize(9);
