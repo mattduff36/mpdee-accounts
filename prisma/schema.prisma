@@ -47,11 +47,14 @@ model InvoiceItem {
   invoice_id        String
   description       String
   quantity          Float
-  rate              Float
-  total             Float
+  unit_price        Float
+  total_price       Float
+  rate              Float?
+  total             Float?
   agency_commission Float        @default(0)
   business_area     BusinessArea @default(CREATIVE)
   created_at        DateTime     @default(now())
+  updated_at        DateTime?
   invoice           Invoice      @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
 
   @@map("invoice_items")
