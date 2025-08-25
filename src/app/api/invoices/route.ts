@@ -162,6 +162,7 @@ export async function POST(request: NextRequest) {
         data: {
           client_id,
           invoice_number,
+          issue_date: new Date(),
           status: InvoiceStatus.DRAFT,
           total_amount,
           due_date: due_date ? new Date(due_date) : null,

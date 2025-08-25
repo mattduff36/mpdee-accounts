@@ -25,13 +25,15 @@ export interface Invoice {
   id: string;
   client_id: string;
   invoice_number: string;
-  status: InvoiceStatus;
-  total_amount: number;
-  sent_date: Date | null;
+  issue_date: Date;
   due_date: Date | null;
-  paid_date: Date | null;
+  total_amount: number;
+  status: InvoiceStatus;
+  notes: string | null;
   created_at: Date;
   updated_at: Date;
+  sent_date: Date | null;
+  paid_date: Date | null;
 }
 
 export interface InvoiceItem {

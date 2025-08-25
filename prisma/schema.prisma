@@ -29,13 +29,15 @@ model Invoice {
   id             String        @id @default(cuid())
   client_id      String
   invoice_number String        @unique
-  status         InvoiceStatus @default(DRAFT)
-  total_amount   Float         @default(0)
-  sent_date      DateTime?
+  issue_date     DateTime
   due_date       DateTime?
-  paid_date      DateTime?
+  total_amount   Float         @default(0)
+  status         InvoiceStatus @default(DRAFT)
+  notes          String?
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
+  sent_date      DateTime?
+  paid_date      DateTime?
   items          InvoiceItem[]
   client         Client        @relation(fields: [client_id], references: [id], onDelete: Cascade)
 
