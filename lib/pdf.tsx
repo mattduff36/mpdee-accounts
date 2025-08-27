@@ -4,6 +4,46 @@ import { InvoicePDFData } from './types';
 import fs from 'fs';
 import path from 'path';
 
+// Function to determine predominant business area and return corresponding color
+function getPredominantBusinessAreaColor(items: any[]): readonly [number, number, number] {
+  // Business area color mapping
+  const businessAreaColors = {
+    CREATIVE: [7, 78, 188] as const,     // #074EBC - Deep Blue
+    DEVELOPMENT: [251, 183, 17] as const, // #FBB711 - Golden Yellow
+    SUPPORT: [200, 49, 53] as const      // #C83135 - Red
+  } as const;
+
+  if (items.length === 0) {
+    return businessAreaColors.CREATIVE; // Default fallback
+  }
+
+  // Count occurrences of each business area
+  const areaCounts = items.reduce((counts, item) => {
+    const area = item.business_area;
+    counts[area] = (counts[area] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
+
+  // Find the business area with the highest count
+  let maxCount = 0;
+  let predominantArea = items[0].business_area; // Fallback to first item's area
+
+  for (const [area, count] of Object.entries(areaCounts)) {
+    if ((count as number) > maxCount) {
+      maxCount = count as number;
+      predominantArea = area;
+    }
+  }
+
+  // If there's a tie, use the first item's business area
+  const tieCount = Object.values(areaCounts).filter(count => count === maxCount).length;
+  if (tieCount > 1) {
+    predominantArea = items[0].business_area;
+  }
+
+  return businessAreaColors[predominantArea as keyof typeof businessAreaColors] || businessAreaColors.CREATIVE;
+}
+
 export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuffer> {
   try {
     const { invoice, company } = data;
@@ -11,8 +51,8 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     // Create new PDF document
     const doc = new jsPDF();
     
-    // Brand color (convert hex to RGB)
-    const brandColor = [79, 70, 229] as const; // #4f46e5
+    // Dynamic brand color based on predominant business area
+    const brandColor = getPredominantBusinessAreaColor(invoice.items);
     const blackColor = [0, 0, 0] as const;
     const grayColor = [107, 114, 128] as const; // #6b7280
 
@@ -21,7 +61,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     // Header - Company logo (left side)
     let logoHeight = 0;
     try {
-      const logoPath = path.join(process.cwd(), 'public', 'images', 'Invoice-logo.png');
+      const logoPath = path.join(process.cwd(), 'public', 'images', 'Invoice-logo-new.png');
       if (fs.existsSync(logoPath)) {
         const logoData = fs.readFileSync(logoPath);
         const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`;

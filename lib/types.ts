@@ -145,6 +145,7 @@ export interface LoginCredentials {
 // Email types
 export interface EmailOptions {
   to: string;
+  bcc?: string;
   subject: string;
   html: string;
   attachments?: Array<{

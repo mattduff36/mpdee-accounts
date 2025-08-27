@@ -34,7 +34,7 @@ export async function GET(
     const pdfArrayBuffer = await generateInvoicePDF({
       invoice,
       company: {
-        name: process.env.COMPANY_NAME || 'MPDEE Creative',
+        name: process.env.COMPANY_NAME || 'MPDEE',
         email: process.env.COMPANY_EMAIL || 'matt.mpdee@gmail.com',
         phone: process.env.COMPANY_PHONE,
         address: '6 Brocklehurst Drive, Edwinstowe, Mansfield, Notts. NG21 9JW',

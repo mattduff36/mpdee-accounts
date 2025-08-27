@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'MPDEE Accounts - Professional Accounting System',
-  description: 'Professional accounting and invoice management system for MPDEE Creative',
+  description: 'Professional accounting and invoice management system for MPDEE',
   keywords: [
     'accounting',
     'invoice management',

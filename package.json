@@ -1,7 +1,7 @@
 {
   "name": "mpdee-accounts",
   "version": "0.1.0",
-  "description": "Professional accounting and invoice management system for MPDEE Creative",
+  "description": "Professional accounting and invoice management system for MPDEE",
   "private": true,
   "scripts": {
     "dev": "next dev",

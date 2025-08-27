@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Toast from './Toast';
 import { Client, InvoiceWithDetails, InvoiceFormData, InvoiceItemFormData, PaginatedResponse } from '@/lib/types';
-import { AdjustmentsHorizontalIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { AdjustmentsHorizontalIcon, TrashIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 interface InvoiceFormProps {
   invoice?: InvoiceWithDetails;
@@ -23,6 +24,7 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
   const [error, setError] = useState('');
   const [showAgencyModal, setShowAgencyModal] = useState(false);
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
   const router = useRouter();
 
   // Fetch clients for selection
@@ -194,6 +196,13 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
 
   return (
     <div className="max-w-6xl mx-auto">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-medium text-gray-900">
@@ -414,6 +423,32 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
             >
               Cancel
             </button>
+            {invoice && (invoice.status === 'SENT' || invoice.status === 'OVERDUE') && (
+              <button
+                type="button"
+                                 onClick={async () => {
+                   try {
+                     const response = await fetch(`/api/invoices/${invoice.id}/send`, {
+                       method: 'POST',
+                     });
+                     if (response.ok) {
+                       setToast({ message: 'Invoice resent successfully!', type: 'success' });
+                     } else {
+                       setToast({ message: 'Failed to resend invoice', type: 'error' });
+                     }
+                   } catch (error) {
+                     setToast({ message: 'Failed to resend invoice', type: 'error' });
+                   }
+                 }}
+                disabled={isLoading}
+                className="px-4 py-2 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <div className="flex items-center">
+                  <PaperAirplaneIcon className="h-4 w-4 mr-2" />
+                  Resend Invoice
+                </div>
+              </button>
+            )}
             <button
               type="submit"
               disabled={isLoading || !formData.client_id || formData.items.length === 0}

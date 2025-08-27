@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
+import Toast from '@/components/Toast';
 import { InvoiceWithClient, PaginatedResponse, InvoiceStatus } from '@/lib/types';
 import { 
   PencilIcon, 
@@ -24,6 +25,7 @@ export default function InvoicesPage() {
   const [deleteInvoiceId, setDeleteInvoiceId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
   const router = useRouter();
 
   const limit = 10;
@@ -85,14 +87,15 @@ export default function InvoicesPage() {
 
       const data = await response.json();
       if (response.ok && data.success) {
+        setToast({ message: 'Invoice marked as paid!', type: 'success' });
         // Refresh the invoices list
         fetchInvoices();
       } else {
-        setError(data.error || 'Failed to update invoice status');
+        setToast({ message: data.error || 'Failed to update invoice status', type: 'error' });
       }
     } catch (error) {
       console.error('Error updating invoice status:', error);
-      setError('Failed to update invoice status');
+      setToast({ message: 'Failed to update invoice status', type: 'error' });
     } finally {
       setUpdatingStatusId(null);
     }
@@ -108,14 +111,15 @@ export default function InvoicesPage() {
       const data = await response.json();
 
       if (data.success) {
+        setToast({ message: 'Invoice deleted successfully!', type: 'success' });
         setDeleteInvoiceId(null);
         fetchInvoices(); // Refresh the list
       } else {
-        setError(data.error || 'Failed to delete invoice');
+        setToast({ message: data.error || 'Failed to delete invoice', type: 'error' });
       }
     } catch (error) {
       console.error('Error deleting invoice:', error);
-      setError('Network error. Please try again.');
+      setToast({ message: 'Network error. Please try again.', type: 'error' });
     } finally {
       setIsDeleting(false);
     }
@@ -158,6 +162,13 @@ export default function InvoicesPage() {
   return (
     <>
       <Navigation />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -276,12 +287,13 @@ export default function InvoicesPage() {
                                       method: 'POST',
                                     });
                                     if (response.ok) {
+                                      setToast({ message: 'Invoice sent successfully!', type: 'success' });
                                       fetchInvoices(); // Refresh list
                                     } else {
-                                      setError('Failed to send invoice');
+                                      setToast({ message: 'Failed to send invoice', type: 'error' });
                                     }
                                   } catch (error) {
-                                    setError('Failed to send invoice');
+                                    setToast({ message: 'Failed to send invoice', type: 'error' });
                                   }
                                 }}
                                 className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors"
@@ -291,18 +303,41 @@ export default function InvoicesPage() {
                               </button>
                             )}
                             {(invoice.status === InvoiceStatus.SENT || invoice.status === InvoiceStatus.OVERDUE) && (
-                              <button
-                                onClick={() => handleMarkAsPaid(invoice.id)}
-                                disabled={updatingStatusId === invoice.id}
-                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Mark as Paid"
-                              >
-                                {updatingStatusId === invoice.id ? (
-                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
-                                ) : (
-                                  <CheckCircleIcon className="h-6 w-6" />
-                                )}
-                              </button>
+                              <>
+                                <button
+                                  onClick={() => handleMarkAsPaid(invoice.id)}
+                                  disabled={updatingStatusId === invoice.id}
+                                  className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Mark as Paid"
+                                >
+                                  {updatingStatusId === invoice.id ? (
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                                  ) : (
+                                    <CheckCircleIcon className="h-6 w-6" />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/invoices/${invoice.id}/send`, {
+                                        method: 'POST',
+                                      });
+                                      if (response.ok) {
+                                        setToast({ message: 'Invoice resent successfully!', type: 'success' });
+                                        fetchInvoices(); // Refresh list
+                                      } else {
+                                        setToast({ message: 'Failed to resend invoice', type: 'error' });
+                                      }
+                                    } catch (error) {
+                                      setToast({ message: 'Failed to resend invoice', type: 'error' });
+                                    }
+                                  }}
+                                  className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors"
+                                  title="Resend Invoice"
+                                >
+                                  <PaperAirplaneIcon className="h-6 w-6" />
+                                </button>
+                              </>
                             )}
                             <button
                               onClick={() => window.open(`/api/invoices/${invoice.id}/pdf`, '_blank')}

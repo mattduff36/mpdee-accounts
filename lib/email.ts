@@ -4,6 +4,46 @@ import { EmailOptions } from './types';
 import { prisma } from './db';
 import { generateInvoicePDF, formatCurrency, formatDate } from './pdf';
 
+// Function to determine predominant business area and return corresponding hex color
+function getPredominantBusinessAreaHexColor(items: any[]): string {
+  // Business area color mapping (hex colors for email templates)
+  const businessAreaColors = {
+    CREATIVE: '#074EBC',     // Deep Blue
+    DEVELOPMENT: '#FBB711',  // Golden Yellow
+    SUPPORT: '#C83135'       // Red
+  } as const;
+
+  if (items.length === 0) {
+    return businessAreaColors.CREATIVE; // Default fallback
+  }
+
+  // Count occurrences of each business area
+  const areaCounts = items.reduce((counts, item) => {
+    const area = item.business_area;
+    counts[area] = (counts[area] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
+
+  // Find the business area with the highest count
+  let maxCount = 0;
+  let predominantArea = items[0].business_area; // Fallback to first item's area
+
+  for (const [area, count] of Object.entries(areaCounts)) {
+    if ((count as number) > maxCount) {
+      maxCount = count as number;
+      predominantArea = area;
+    }
+  }
+
+  // If there's a tie, use the first item's business area
+  const tieCount = Object.values(areaCounts).filter(count => count === maxCount).length;
+  if (tieCount > 1) {
+    predominantArea = items[0].business_area;
+  }
+
+  return businessAreaColors[predominantArea as keyof typeof businessAreaColors] || businessAreaColors.CREATIVE;
+}
+
 // Create SMTP transporter
 function createTransporter() {
   return nodemailer.createTransport({
@@ -24,6 +64,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: options.to,
+      bcc: options.bcc,
       subject: options.subject,
       html: options.html,
       attachments: options.attachments,
@@ -57,7 +98,7 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
     const pdfArrayBuffer = await generateInvoicePDF({
       invoice: invoice as any,
       company: {
-        name: process.env.COMPANY_NAME || 'MPDEE Creative',
+        name: process.env.COMPANY_NAME || 'MPDEE',
         email: process.env.COMPANY_EMAIL || 'matt.mpdee@gmail.com',
         phone: process.env.COMPANY_PHONE,
         address: '6 Brocklehurst Drive, Edwinstowe, Mansfield, Notts. NG21 9JW',
@@ -67,12 +108,15 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
     // Convert ArrayBuffer to Buffer for email attachment
     const pdfBuffer = Buffer.from(pdfArrayBuffer);
 
+    // Get dynamic color based on invoice items
+    const dynamicColor = getPredominantBusinessAreaHexColor(invoice.items);
+
     // Create email content
-    const emailSubject = `Invoice ${invoice.invoice_number} from ${process.env.COMPANY_NAME || 'MPDEE Creative'}`;
+    const emailSubject = `Invoice ${invoice.invoice_number} from ${process.env.COMPANY_NAME || 'MPDEE'}`;
     
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4f46e5;">Invoice ${invoice.invoice_number}</h2>
+        <h2 style="color: ${dynamicColor};">Invoice ${invoice.invoice_number}</h2>
         
         <p>Dear ${invoice.client.name},</p>
         
@@ -99,7 +143,7 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
           <p>Best regards,<br>
-          ${process.env.COMPANY_NAME || 'MPDEE Creative'}<br>
+          ${process.env.COMPANY_NAME || 'MPDEE'}<br>
           ${process.env.COMPANY_EMAIL || 'matt.mpdee@gmail.com'}</p>
         </div>
       </div>
@@ -108,6 +152,7 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
     // Send email with PDF attachment
     const emailSent = await sendEmail({
       to: invoice.client.email,
+      bcc: 'matt.mpdee@gmail.com',
       subject: emailSubject,
       html: emailHtml,
       attachments: [
