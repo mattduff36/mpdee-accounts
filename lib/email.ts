@@ -1,5 +1,5 @@
-// Email service with Google SMTP integration
-import nodemailer from 'nodemailer';
+// Email service with Resend integration
+import { Resend } from 'resend';
 import { EmailOptions } from './types';
 import { prisma } from './db';
 import { generateInvoicePDF, formatCurrency, formatDate } from './pdf';
@@ -44,34 +44,34 @@ function getPredominantBusinessAreaHexColor(items: any[]): string {
   return businessAreaColors[predominantArea as keyof typeof businessAreaColors] || businessAreaColors.CREATIVE;
 }
 
-// Create SMTP transporter
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
-}
+// Initialize Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    const transporter = createTransporter();
-    
-    const mailOptions = {
-      from: process.env.SMTP_USER,
+    const emailData: any = {
+      from: 'MPDEE Admin <admin@mpdee.co.uk>',
       to: options.to,
-      bcc: options.bcc,
       subject: options.subject,
       html: options.html,
-      attachments: options.attachments,
     };
 
-    const result = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', result.messageId);
+    // Add BCC if provided
+    if (options.bcc) {
+      emailData.bcc = options.bcc;
+    }
+
+    // Add attachments if provided
+    if (options.attachments && options.attachments.length > 0) {
+      emailData.attachments = options.attachments.map(attachment => ({
+        filename: attachment.filename,
+        content: attachment.content,
+        contentType: attachment.contentType,
+      }));
+    }
+
+    const result = await resend.emails.send(emailData);
+    console.log('Email sent successfully:', result.data?.id);
     return true;
   } catch (error) {
     console.error('Error sending email:', error);
@@ -99,7 +99,7 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
       invoice: invoice as any,
       company: {
         name: process.env.COMPANY_NAME || 'MPDEE',
-        email: process.env.COMPANY_EMAIL || 'matt.mpdee@gmail.com',
+        email: process.env.COMPANY_EMAIL || 'admin@mpdee.co.uk',
         phone: process.env.COMPANY_PHONE,
         address: '6 Brocklehurst Drive, Edwinstowe, Mansfield, Notts. NG21 9JW',
       },
@@ -142,9 +142,9 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
         <p>If you have any questions about this invoice, please don't hesitate to contact us.</p>
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
-          <p>Best regards,<br>
-          ${process.env.COMPANY_NAME || 'MPDEE'}<br>
-          ${process.env.COMPANY_EMAIL || 'matt.mpdee@gmail.com'}</p>
+          <p>Kind regards,<br>
+          MPDEE Admin<br>
+          mpdee.co.uk</p>
         </div>
       </div>
     `;
@@ -152,7 +152,7 @@ export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
     // Send email with PDF attachment
     const emailSent = await sendEmail({
       to: invoice.client.email,
-      bcc: 'matt.mpdee@gmail.com',
+      bcc: 'admin@mpdee.co.uk',
       subject: emailSubject,
       html: emailHtml,
       attachments: [

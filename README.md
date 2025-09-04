@@ -88,12 +88,10 @@ SUPABASE_JWT_SECRET="your_jwt_secret"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your_anon_key"
 SUPABASE_SERVICE_ROLE_KEY="your_service_role_key"
 
-# Email (Google SMTP)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-EMAIL_FROM=your_email@gmail.com
+# Email (Resend)
+RESEND_API_KEY=your_resend_api_key
+COMPANY_EMAIL=admin@mpdee.co.uk
+COMPANY_NAME=MPDEE
 
 # JWT Secret
 JWT_SECRET=your_jwt_secret_key
