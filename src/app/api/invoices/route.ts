@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
-    const status = searchParams.get('status') as InvoiceStatus | null;
+    const statusFilters = searchParams.getAll('status') as InvoiceStatus[];
     const client_id = searchParams.get('client_id') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -50,8 +50,8 @@ export async function GET(request: NextRequest) {
       ];
     }
     
-    if (status) {
-      where.status = status;
+    if (statusFilters.length > 0) {
+      where.status = { in: statusFilters };
     }
     
     if (client_id) {

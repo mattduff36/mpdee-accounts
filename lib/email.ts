@@ -79,6 +79,90 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   }
 }
 
+export async function sendPaymentReceivedEmail(invoiceId: string): Promise<boolean> {
+  try {
+    // Fetch invoice with client and items
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: {
+        client: true,
+        items: true,
+      },
+    });
+
+    if (!invoice) {
+      throw new Error('Invoice not found');
+    }
+
+    // Get dynamic color based on invoice items
+    const dynamicColor = getPredominantBusinessAreaHexColor(invoice.items);
+
+    // Create email content
+    const emailSubject = `Payment Received - Thank You! (${invoice.invoice_number})`;
+    
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: ${dynamicColor}; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 24px;">Payment Received!</h1>
+        </div>
+        
+        <div style="background-color: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px;">
+          <div style="background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2 style="color: #2d3748; margin-top: 0;">Thank you for your payment!</h2>
+            <p style="color: #4a5568; line-height: 1.6;">
+              We're pleased to confirm that we have received your payment for invoice <strong>${invoice.invoice_number}</strong>.
+            </p>
+            
+            <div style="background-color: #f7fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #4a5568; font-weight: 500;">Invoice Number:</span>
+                <span style="color: #2d3748; font-weight: 600;">${invoice.invoice_number}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #4a5568; font-weight: 500;">Amount Paid:</span>
+                <span style="color: #059669; font-weight: 700; font-size: 18px;">${formatCurrency(invoice.total_amount)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #4a5568; font-weight: 500;">Marked Paid Date:</span>
+                <span style="color: #2d3748; font-weight: 600;">${formatDate(new Date())}</span>
+              </div>
+            </div>
+            
+            <div style="background-color: #e6fffa; border-left: 4px solid #38b2ac; padding: 15px; margin: 20px 0;">
+              <p style="color: #234e52; margin: 0; font-weight: 500;">
+                💡 <strong>Need a receipt?</strong> This email serves as confirmation of payment. For formal receipts or any questions, please don't hesitate to contact us.
+              </p>
+            </div>
+          </div>
+          
+          <p style="color: #4a5568; line-height: 1.6;">
+            If you have any questions about this payment or need any additional documentation, please don't hesitate to contact us.
+          </p>
+          
+          <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px;">
+            <p>Kind regards,<br>
+            MPDEE Admin<br>
+            mpdee.co.uk</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Send email
+    const emailSent = await sendEmail({
+      to: invoice.client.email,
+      bcc: 'admin@mpdee.co.uk',
+      subject: emailSubject,
+      html: emailHtml,
+    });
+
+    return emailSent;
+  } catch (error) {
+    console.error('Error sending payment received email:', error);
+    return false;
+  }
+}
+
 export async function sendInvoiceEmail(invoiceId: string): Promise<boolean> {
   try {
     // Fetch invoice with client and items

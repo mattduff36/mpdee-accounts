@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Toast from './Toast';
 import { Client, InvoiceWithDetails, InvoiceFormData, InvoiceItemFormData, PaginatedResponse } from '@/lib/types';
@@ -19,13 +19,51 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
     due_date: '',
     items: [{ description: '', quantity: '', rate: '', agency_commission: 0, business_area: 'CREATIVE' }],
   });
+  const [dueDateOption, setDueDateOption] = useState<'end_of_month' | '30_days' | 'other'>('end_of_month');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Calculate due date based on selected option
+  const calculateDueDate = useCallback((option: 'end_of_month' | '30_days' | 'other', customDate?: string) => {
+    const today = new Date();
+    
+    switch (option) {
+      case 'end_of_month':
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        return endOfMonth.toISOString().split('T')[0];
+      case '30_days':
+        const thirtyDaysFromNow = new Date(today);
+        thirtyDaysFromNow.setDate(today.getDate() + 30);
+        return thirtyDaysFromNow.toISOString().split('T')[0];
+      case 'other':
+        return customDate || '';
+      default:
+        return '';
+    }
+  }, []);
+
+  // Handle due date option change
+  const handleDueDateOptionChange = (option: 'end_of_month' | '30_days' | 'other') => {
+    setDueDateOption(option);
+    if (option !== 'other') {
+      const newDueDate = calculateDueDate(option);
+      setFormData(prev => ({ ...prev, due_date: newDueDate }));
+    }
+  };
   const [isLoadingClients, setIsLoadingClients] = useState(true);
   const [error, setError] = useState('');
   const [showAgencyModal, setShowAgencyModal] = useState(false);
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
   const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
   const router = useRouter();
+
+  // Initialize default due date
+  useEffect(() => {
+    if (!invoice) {
+      // Set default due date to end of month for new invoices
+      const defaultDueDate = calculateDueDate('end_of_month');
+      setFormData(prev => ({ ...prev, due_date: defaultDueDate }));
+    }
+  }, [calculateDueDate, invoice]);
 
   // Fetch clients for selection
   useEffect(() => {
@@ -66,6 +104,11 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
           business_area: item.business_area || 'CREATIVE',
         })),
       });
+      
+      // Set due date option to 'other' when editing existing invoice
+      if (dueDate) {
+        setDueDateOption('other');
+      }
     }
   }, [invoice]);
 
@@ -244,18 +287,79 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
             </div>
 
             <div>
-              <label htmlFor="due_date" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
                 Due Date
               </label>
-              <input
-                type="date"
-                id="due_date"
-                name="due_date"
-                className="mt-1 block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                value={formData.due_date}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
+              
+              {/* Due Date Option Buttons */}
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleDueDateOptionChange('end_of_month')}
+                    disabled={isLoading}
+                    className={`px-4 py-3 text-sm font-medium border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px] flex items-center justify-center ${
+                      dueDateOption === 'end_of_month'
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50'
+                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    End of Month
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => handleDueDateOptionChange('30_days')}
+                    disabled={isLoading}
+                    className={`px-4 py-3 text-sm font-medium border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px] flex items-center justify-center ${
+                      dueDateOption === '30_days'
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50'
+                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    30 Days
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => handleDueDateOptionChange('other')}
+                    disabled={isLoading}
+                    className={`px-4 py-3 text-sm font-medium border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px] flex items-center justify-center ${
+                      dueDateOption === 'other'
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50'
+                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    Other
+                  </button>
+                </div>
+                
+                {/* Custom Date Input - Only show when "Other" is selected */}
+                {dueDateOption === 'other' && (
+                  <div className="mt-3">
+                    <input
+                      type="date"
+                      id="due_date"
+                      name="due_date"
+                      className="block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      value={formData.due_date}
+                      onChange={handleChange}
+                      disabled={isLoading}
+                    />
+                  </div>
+                )}
+                
+                {/* Display calculated due date for End of Month and 30 Days */}
+                {dueDateOption !== 'other' && formData.due_date && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    Due: {new Date(formData.due_date).toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -298,14 +402,17 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
                       </label>
                       <input
                         type="number"
-                        inputMode="decimal"
-                        min="0"
-                        step="0.01"
+                        inputMode="numeric"
+                        min="1"
+                        step="1"
                         className="mt-1 block w-full px-2 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-right"
                         value={item.quantity === '' ? '' : item.quantity}
                         onChange={(e) => {
                           const v = e.target.value;
-                          handleItemChange(index, 'quantity', v === '' ? '' : parseFloat(v));
+                          // Only allow integers
+                          if (v === '' || /^\d+$/.test(v)) {
+                            handleItemChange(index, 'quantity', v === '' ? '' : parseInt(v));
+                          }
                         }}
                         disabled={isLoading}
                       />
@@ -325,7 +432,10 @@ export default function InvoiceForm({ invoice, onSuccess, onCancel }: InvoiceFor
                         value={item.rate === '' ? '' : item.rate}
                         onChange={(e) => {
                           const v = e.target.value;
-                          handleItemChange(index, 'rate', v === '' ? '' : parseFloat(v));
+                          // Allow empty, integers, or numbers with up to 2 decimal places
+                          if (v === '' || /^\d*\.?\d{0,2}$/.test(v)) {
+                            handleItemChange(index, 'rate', v === '' ? '' : parseFloat(v) || 0);
+                          }
                         }}
                         disabled={isLoading}
                       />
@@ -494,11 +604,11 @@ interface AgencyCommissionModalProps {
 }
 
 function AgencyCommissionModal({ currentPercentage, onSave, onCancel }: AgencyCommissionModalProps) {
-  const [percentage, setPercentage] = useState(currentPercentage);
+  const [percentage, setPercentage] = useState<number | string>(currentPercentage === 0 ? '' : currentPercentage);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(percentage);
+    onSave(typeof percentage === 'string' && percentage === '' ? 0 : Number(percentage));
   };
 
   return (
@@ -520,9 +630,22 @@ function AgencyCommissionModal({ currentPercentage, onSave, onCancel }: AgencyCo
                 max="100"
                 step="0.01"
                 value={percentage}
-                onChange={(e) => setPercentage(parseFloat(e.target.value) || 0)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  // Allow empty, integers, or numbers with up to 2 decimal places
+                  if (v === '' || /^\d*\.?\d{0,2}$/.test(v)) {
+                    if (v === '') {
+                      setPercentage('');
+                    } else {
+                      const numValue = parseFloat(v);
+                      if (numValue <= 100) {
+                        setPercentage(numValue);
+                      }
+                    }
+                  }
+                }}
                 className="block w-full pl-3 pr-8 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                placeholder="0"
+                placeholder="Enter percentage"
                 autoFocus
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">

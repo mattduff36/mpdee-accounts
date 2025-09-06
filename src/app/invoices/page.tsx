@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Toast from '@/components/Toast';
+import InvoiceDetailsModal from '@/components/InvoiceDetailsModal';
 import { InvoiceWithClient, PaginatedResponse, InvoiceStatus } from '@/lib/types';
 import { 
   PencilIcon, 
@@ -19,13 +20,38 @@ export default function InvoicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<InvoiceStatus | ''>('');
+  const [statusFilters, setStatusFilters] = useState<Set<InvoiceStatus>>(new Set());
   const [page, setPage] = useState(1);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+
+  // Load filters from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedFilters = localStorage.getItem('invoiceStatusFilters');
+      if (savedFilters) {
+        try {
+          const filterArray = JSON.parse(savedFilters);
+          setStatusFilters(new Set(filterArray));
+        } catch (error) {
+          console.error('Error loading saved filters:', error);
+        }
+      }
+      setFiltersLoaded(true);
+    }
+  }, []);
+
+  // Save filters to localStorage whenever they change (but not on initial load)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && filtersLoaded) {
+      localStorage.setItem('invoiceStatusFilters', JSON.stringify(Array.from(statusFilters)));
+    }
+  }, [statusFilters, filtersLoaded]);
   const [total, setTotal] = useState(0);
   const [deleteInvoiceId, setDeleteInvoiceId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const router = useRouter();
 
   const limit = 10;
@@ -37,7 +63,11 @@ export default function InvoicesPage() {
         page: page.toString(),
         limit: limit.toString(),
         ...(search && { search }),
-        ...(statusFilter && { status: statusFilter }),
+      });
+
+      // Add multiple status filters
+      statusFilters.forEach(status => {
+        params.append('status', status);
       });
 
       const response = await fetch(`/api/invoices?${params}`);
@@ -59,15 +89,21 @@ export default function InvoicesPage() {
 
   useEffect(() => {
     fetchInvoices();
-  }, [page, search, statusFilter]);
+  }, [page, search, statusFilters]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     setPage(1); // Reset to first page when searching
   };
 
-  const handleStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value as InvoiceStatus | '');
+  const toggleStatusFilter = (status: InvoiceStatus) => {
+    const newFilters = new Set(statusFilters);
+    if (newFilters.has(status)) {
+      newFilters.delete(status);
+    } else {
+      newFilters.add(status);
+    }
+    setStatusFilters(newFilters);
     setPage(1); // Reset to first page when filtering
   };
 
@@ -170,6 +206,12 @@ export default function InvoicesPage() {
         />
       )}
       
+      {/* Invoice Details Modal */}
+      <InvoiceDetailsModal
+        invoiceId={selectedInvoiceId}
+        onClose={() => setSelectedInvoiceId(null)}
+      />
+      
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
@@ -190,29 +232,125 @@ export default function InvoicesPage() {
 
           <div className="mt-8">
             {/* Filters */}
-            <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Search invoices..."
-                  className="block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={search}
-                  onChange={handleSearch}
-                />
+            <div className="mb-6">
+              {/* Desktop Layout: Search and Buttons on same line */}
+              <div className="hidden lg:flex lg:items-end lg:gap-6">
+                {/* Search */}
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search invoices..."
+                    className="block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value={search}
+                    onChange={handleSearch}
+                  />
+                </div>
+                
+                {/* Status Filter Buttons */}
+                <div className="flex-shrink-0">
+                  <div className="flex gap-2">
+                    {Object.values(InvoiceStatus).map((status) => {
+                      const isActive = statusFilters.has(status);
+                      const statusColors = {
+                        [InvoiceStatus.DRAFT]: {
+                          active: 'bg-gray-600 text-white border-gray-600',
+                          inactive: 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                        },
+                        [InvoiceStatus.SENT]: {
+                          active: 'bg-blue-600 text-white border-blue-600',
+                          inactive: 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
+                        },
+                        [InvoiceStatus.PAID]: {
+                          active: 'bg-green-600 text-white border-green-600',
+                          inactive: 'bg-white text-green-600 border-green-300 hover:bg-green-50'
+                        },
+                        [InvoiceStatus.OVERDUE]: {
+                          active: 'bg-red-600 text-white border-red-600',
+                          inactive: 'bg-white text-red-600 border-red-300 hover:bg-red-50'
+                        }
+                      };
+                      
+                      return (
+                        <button
+                          key={status}
+                          onClick={() => toggleStatusFilter(status)}
+                          className={`px-3 py-2 text-sm font-medium border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                            isActive ? statusColors[status].active : statusColors[status].inactive
+                          }`}
+                        >
+                          {status.charAt(0) + status.slice(1).toLowerCase()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-              <div>
-                <select
-                  className="block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={statusFilter}
-                  onChange={handleStatusFilter}
-                >
-                  <option value="">All Statuses</option>
-                  <option value={InvoiceStatus.DRAFT}>Draft</option>
-                  <option value={InvoiceStatus.SENT}>Sent</option>
-                  <option value={InvoiceStatus.PAID}>Paid</option>
-                  <option value={InvoiceStatus.OVERDUE}>Overdue</option>
-                </select>
+
+              {/* Mobile/Tablet Layout: Stacked */}
+              <div className="lg:hidden space-y-4">
+                {/* Search */}
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Search invoices..."
+                    className="block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value={search}
+                    onChange={handleSearch}
+                  />
+                </div>
+                
+                {/* Status Filter Buttons */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.values(InvoiceStatus).map((status) => {
+                      const isActive = statusFilters.has(status);
+                      const statusColors = {
+                        [InvoiceStatus.DRAFT]: {
+                          active: 'bg-gray-600 text-white border-gray-600',
+                          inactive: 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                        },
+                        [InvoiceStatus.SENT]: {
+                          active: 'bg-blue-600 text-white border-blue-600',
+                          inactive: 'bg-white text-blue-600 border-blue-300 hover:bg-blue-50'
+                        },
+                        [InvoiceStatus.PAID]: {
+                          active: 'bg-green-600 text-white border-green-600',
+                          inactive: 'bg-white text-green-600 border-green-300 hover:bg-green-50'
+                        },
+                        [InvoiceStatus.OVERDUE]: {
+                          active: 'bg-red-600 text-white border-red-600',
+                          inactive: 'bg-white text-red-600 border-red-300 hover:bg-red-50'
+                        }
+                      };
+                      
+                      return (
+                        <button
+                          key={status}
+                          onClick={() => toggleStatusFilter(status)}
+                          className={`px-4 py-3 text-sm font-medium border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px] flex items-center justify-center ${
+                            isActive ? statusColors[status].active : statusColors[status].inactive
+                          }`}
+                        >
+                          {status.charAt(0) + status.slice(1).toLowerCase()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
+
+              {/* Clear all filters button (both layouts) */}
+              {statusFilters.size > 0 && (
+                <div className="mt-3">
+                  <button
+                    onClick={() => setStatusFilters(new Set())}
+                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && (
@@ -231,7 +369,7 @@ export default function InvoicesPage() {
               ) : invoices.length === 0 ? (
                 <div className="p-8 text-center">
                   <p className="text-sm text-gray-500">
-                    {search || statusFilter ? 'No invoices found matching your criteria.' : 'No invoices yet. Create your first invoice!'}
+                    {search || statusFilters.size > 0 ? 'No invoices found matching your criteria.' : 'No invoices yet. Create your first invoice!'}
                   </p>
                 </div>
               ) : (
@@ -240,7 +378,10 @@ export default function InvoicesPage() {
                     <li key={invoice.id}>
                       <div className="px-4 py-4">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center">
+                          <div 
+                            className="flex items-center flex-1 cursor-pointer hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors"
+                            onClick={() => setSelectedInvoiceId(invoice.id)}
+                          >
                             <ClientAvatar client={invoice.client} />
                             <div className="ml-4">
                               <div className="flex items-center">

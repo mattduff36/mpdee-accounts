@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../../lib/db';
 import { requireAuth } from '../../../../../../lib/auth';
+import { sendPaymentReceivedEmail } from '../../../../../../lib/email';
 import { ApiResponse, InvoiceStatus } from '../../../../../../lib/types';
 
 // PATCH /api/invoices/[id]/status - Update invoice status
@@ -58,6 +59,17 @@ export async function PATCH(
       where: { id },
       data: updateData,
     });
+
+    // Send payment received email if status is changed to PAID
+    if (status === InvoiceStatus.PAID && existingInvoice.status !== InvoiceStatus.PAID) {
+      try {
+        await sendPaymentReceivedEmail(id);
+        console.log(`Payment received email sent for invoice ${id}`);
+      } catch (error) {
+        console.error(`Failed to send payment received email for invoice ${id}:`, error);
+        // Don't fail the status update if email fails
+      }
+    }
 
     const response: ApiResponse<typeof updatedInvoice> = {
       success: true,
