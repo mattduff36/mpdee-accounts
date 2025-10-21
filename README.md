@@ -11,7 +11,7 @@ A professional accounting and invoice management system for MPDEE Creative. Buil
 - **Email Integration**: Send invoices directly to clients via email
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Modern Technology**: Built with Next.js 15, React, TypeScript, and Prisma
-- **Cloud Database**: PostgreSQL database hosted on Supabase for production reliability
+- **Cloud Database**: PostgreSQL database hosted on Neon for production reliability
 
 ## Core Functionality
 
@@ -68,33 +68,25 @@ Create a `.env.local` file with the following variables:
 # Authentication
 ADMIN_USERNAME=your_admin_username
 ADMIN_PASSWORD=your_secure_password
+NEXTAUTH_SECRET=your_jwt_secret_key
+NEXTAUTH_URL=http://localhost:3000
 
-# Database (Local Development)
-DATABASE_URL="file:./dev.db"
-
-# Production Database (Supabase)
-POSTGRES_PRISMA_URL="postgres://..."
-POSTGRES_URL="postgres://..."
-POSTGRES_USER="postgres"
-POSTGRES_HOST="db.xxx.supabase.co"
-POSTGRES_PASSWORD="your_password"
-POSTGRES_DATABASE="postgres"
-POSTGRES_URL_NON_POOLING="postgres://..."
-
-# Supabase Configuration
-SUPABASE_URL="https://xxx.supabase.co"
-NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"
-SUPABASE_JWT_SECRET="your_jwt_secret"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your_anon_key"
-SUPABASE_SERVICE_ROLE_KEY="your_service_role_key"
+# Database
+POSTGRES_PRISMA_URL="postgresql://user:password@host.neon.tech/database?sslmode=require"
+DATABASE_URL="postgresql://user:password@host.neon.tech/database?sslmode=require"
 
 # Email (Resend)
 RESEND_API_KEY=your_resend_api_key
-COMPANY_EMAIL=admin@mpdee.co.uk
-COMPANY_NAME=MPDEE
 
-# JWT Secret
-JWT_SECRET=your_jwt_secret_key
+# Company Information
+COMPANY_NAME=MPDEE
+COMPANY_EMAIL=admin@mpdee.co.uk
+COMPANY_PHONE=your_phone_number
+COMPANY_ADDRESS="your_company_address"
+
+# Invoice Configuration
+INVOICE_PREFIX=MPD
+DEFAULT_PAYMENT_TERMS=30
 ```
 
 ### Database Setup
@@ -111,8 +103,8 @@ npx prisma migrate dev
 npx prisma studio
 ```
 
-#### Production (PostgreSQL/Supabase)
-The production environment uses Supabase PostgreSQL. The database schema and data have been migrated from SQLite to PostgreSQL.
+#### Production (PostgreSQL/Neon)
+The production environment uses Neon PostgreSQL. The database schema and data have been migrated from Supabase to Neon for improved performance and scalability.
 
 ### Development
 
@@ -138,9 +130,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Styling**: Tailwind CSS, Shadcn UI components
 - **Database**: 
   - Local Development: SQLite with Prisma ORM
-  - Production: PostgreSQL (Supabase) with Prisma ORM
+  - Production: PostgreSQL (Neon) with Prisma ORM
 - **Authentication**: JWT with secure cookies
-- **Email**: Nodemailer with Google SMTP
+- **Email**: Resend API for reliable email delivery
 - **PDF Generation**: React-PDF
 - **Testing**: Jest with React Testing Library
 
@@ -222,19 +214,21 @@ mpdee-accounts/
 
 ## Database Migration
 
-The application has been successfully migrated from SQLite to PostgreSQL (Supabase) for production use. The migration included:
+The application has been successfully migrated to Neon PostgreSQL for production use. The latest migration from Supabase to Neon included:
 
-- **2 Clients** - All client data preserved
-- **2 Invoices** - Complete invoice records with line items
-- **5 Invoice Items** - Detailed line items for all invoices
+- **5 Clients** - All client data preserved
+- **19 Invoices** - Complete invoice records with line items
+- **23 Invoice Items** - Detailed line items for all invoices
 - **70 Expenses** - All business expenses with categories
 
 ### Migration Scripts
 
 The `scripts/` directory contains migration utilities:
+- `migrate-to-neon.js` - Automated Supabase to Neon migration script
 - Database backup and restore scripts
-- SQLite to PostgreSQL migration tools
 - Data verification and validation scripts
+
+See `MIGRATION_CUTOVER_GUIDE.md` for detailed migration instructions and rollback procedures.
 
 ## Deployment
 
@@ -253,7 +247,7 @@ vercel --prod
 ### Production Status
 
 ✅ **Live Site**: https://accounts.mpdee.info/  
-✅ **Database**: PostgreSQL (Supabase)  
+✅ **Database**: PostgreSQL (Neon)  
 ✅ **Data Migration**: Complete  
 ✅ **All Features**: Operational  
 
@@ -262,4 +256,4 @@ vercel --prod
 © 2025 MPDEE Creative. All rights reserved.
 
 ## Last Updated
-August 2025 - Database migration to PostgreSQL completed successfully 
+January 2025 - Database migrated to Neon PostgreSQL for improved performance and scalability 
