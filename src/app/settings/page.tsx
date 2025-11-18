@@ -160,39 +160,74 @@ export default function SettingsPage() {
 
           {/* Tab Navigation */}
           <div className="border-b border-gray-200 mb-6 sm:mb-8">
-            <nav className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto">
+            {/* Mobile tab navigation - equal width */}
+            <nav className="-mb-px flex sm:hidden justify-between px-1">
               <button
                 onClick={() => setActiveTab('workflow')}
-                className={`py-3 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-h-[44px] flex items-center ${
+                className={`flex-1 py-3 px-2 border-b-2 font-medium text-xs whitespace-nowrap min-h-[44px] flex items-center justify-center mx-0.5 ${
                   activeTab === 'workflow'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <DocumentTextIcon className="h-5 w-5 sm:inline sm:mr-2" />
-                <span className="hidden sm:inline">Invoice Workflow</span>
+                <DocumentTextIcon className="h-6 w-6" />
               </button>
               <button
                 onClick={() => setActiveTab('database')}
-                className={`py-3 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-h-[44px] flex items-center ${
+                className={`flex-1 py-3 px-2 border-b-2 font-medium text-xs whitespace-nowrap min-h-[44px] flex items-center justify-center mx-0.5 ${
                   activeTab === 'database'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <CircleStackIcon className="h-5 w-5 sm:inline sm:mr-2" />
-                <span className="hidden sm:inline">Database Tools</span>
+                <CircleStackIcon className="h-6 w-6" />
               </button>
               <button
                 onClick={() => setActiveTab('system')}
-                className={`py-3 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-h-[44px] flex items-center ${
+                className={`flex-1 py-3 px-2 border-b-2 font-medium text-xs whitespace-nowrap min-h-[44px] flex items-center justify-center mx-0.5 ${
                   activeTab === 'system'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <ClockIcon className="h-5 w-5 sm:inline sm:mr-2" />
-                <span className="hidden sm:inline">System Info</span>
+                <ClockIcon className="h-6 w-6" />
+              </button>
+            </nav>
+
+            {/* Desktop tab navigation - text with icons */}
+            <nav className="-mb-px hidden sm:flex space-x-8">
+              <button
+                onClick={() => setActiveTab('workflow')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap min-h-[44px] flex items-center ${
+                  activeTab === 'workflow'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <DocumentTextIcon className="h-5 w-5 inline mr-2" />
+                Invoice Workflow
+              </button>
+              <button
+                onClick={() => setActiveTab('database')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap min-h-[44px] flex items-center ${
+                  activeTab === 'database'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <CircleStackIcon className="h-5 w-5 inline mr-2" />
+                Database Tools
+              </button>
+              <button
+                onClick={() => setActiveTab('system')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap min-h-[44px] flex items-center ${
+                  activeTab === 'system'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <ClockIcon className="h-5 w-5 inline mr-2" />
+                System Info
               </button>
             </nav>
           </div>
