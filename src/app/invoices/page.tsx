@@ -416,7 +416,7 @@ export default function InvoicesPage() {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => router.push(`/invoices/${invoice.id}`)}
-                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors"
+                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors border border-indigo-300"
                               title={invoice.status === InvoiceStatus.DRAFT ? 'Edit Invoice' : 'View Invoice'}
                             >
                               <PencilIcon className="h-6 w-6" />
@@ -438,7 +438,7 @@ export default function InvoicesPage() {
                                     setToast({ message: 'Failed to send invoice', type: 'error' });
                                   }
                                 }}
-                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors"
+                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors border border-green-300"
                                 title="Send Invoice"
                               >
                                 <PaperAirplaneIcon className="h-6 w-6" />
@@ -449,7 +449,7 @@ export default function InvoicesPage() {
                                 <button
                                   onClick={() => handleMarkAsPaid(invoice.id)}
                                   disabled={updatingStatusId === invoice.id}
-                                  className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-green-300"
                                   title="Mark as Paid"
                                 >
                                   {updatingStatusId === invoice.id ? (
@@ -474,7 +474,7 @@ export default function InvoicesPage() {
                                       setToast({ message: 'Failed to resend invoice', type: 'error' });
                                     }
                                   }}
-                                  className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors"
+                                  className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors border border-blue-300"
                                   title="Resend Invoice"
                                 >
                                   <PaperAirplaneIcon className="h-6 w-6" />
@@ -483,7 +483,7 @@ export default function InvoicesPage() {
                             )}
                             <button
                               onClick={() => window.open(`/api/invoices/${invoice.id}/pdf`, '_blank')}
-                              className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors"
+                              className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors border border-blue-300"
                               title="Download PDF"
                             >
                               <ArrowDownTrayIcon className="h-6 w-6" />
@@ -491,7 +491,7 @@ export default function InvoicesPage() {
                             {invoice.status === InvoiceStatus.DRAFT && (
                               <button
                                 onClick={() => setDeleteInvoiceId(invoice.id)}
-                                className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors"
+                                className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors border border-red-300"
                                 title="Delete Invoice"
                               >
                                 <TrashIcon className="h-6 w-6" />
@@ -535,10 +535,10 @@ export default function InvoicesPage() {
                           </div>
 
                           {/* Action buttons on new line for mobile */}
-                          <div className="flex items-center justify-start gap-2 px-2">
+                          <div className="flex items-center justify-between px-1">
                             <button
                               onClick={() => router.push(`/invoices/${invoice.id}`)}
-                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                              className="flex-1 text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors min-h-[44px] flex items-center justify-center border border-indigo-300 mx-0.5"
                               title={invoice.status === InvoiceStatus.DRAFT ? 'Edit Invoice' : 'View Invoice'}
                             >
                               <PencilIcon className="h-6 w-6" />
@@ -560,7 +560,7 @@ export default function InvoicesPage() {
                                     setToast({ message: 'Failed to send invoice', type: 'error' });
                                   }
                                 }}
-                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                className="flex-1 text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors min-h-[44px] flex items-center justify-center border border-green-300 mx-0.5"
                                 title="Send Invoice"
                               >
                                 <PaperAirplaneIcon className="h-6 w-6" />
@@ -571,7 +571,7 @@ export default function InvoicesPage() {
                                 <button
                                   onClick={() => handleMarkAsPaid(invoice.id)}
                                   disabled={updatingStatusId === invoice.id}
-                                  className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                  className="flex-1 text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] flex items-center justify-center border border-green-300 mx-0.5"
                                   title="Mark as Paid"
                                 >
                                   {updatingStatusId === invoice.id ? (
@@ -596,7 +596,7 @@ export default function InvoicesPage() {
                                       setToast({ message: 'Failed to resend invoice', type: 'error' });
                                     }
                                   }}
-                                  className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                  className="flex-1 text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors min-h-[44px] flex items-center justify-center border border-blue-300 mx-0.5"
                                   title="Resend Invoice"
                                 >
                                   <PaperAirplaneIcon className="h-6 w-6" />
@@ -605,7 +605,7 @@ export default function InvoicesPage() {
                             )}
                             <button
                               onClick={() => window.open(`/api/invoices/${invoice.id}/pdf`, '_blank')}
-                              className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                              className="flex-1 text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors min-h-[44px] flex items-center justify-center border border-blue-300 mx-0.5"
                               title="Download PDF"
                             >
                               <ArrowDownTrayIcon className="h-6 w-6" />
@@ -613,7 +613,7 @@ export default function InvoicesPage() {
                             {invoice.status === InvoiceStatus.DRAFT && (
                               <button
                                 onClick={() => setDeleteInvoiceId(invoice.id)}
-                                className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                className="flex-1 text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors min-h-[44px] flex items-center justify-center border border-red-300 mx-0.5"
                                 title="Delete Invoice"
                               >
                                 <TrashIcon className="h-6 w-6" />
