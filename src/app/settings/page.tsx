@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Navigation } from '@/components';
+import Navigation from '@/components/Navigation';
 import { 
   CogIcon, 
   DocumentTextIcon, 
@@ -148,51 +148,51 @@ export default function SettingsPage() {
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="flex items-center">
-              <CogIcon className="h-8 w-8 text-gray-600 mr-3" />
+              <CogIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-600 mr-2 sm:mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-                <p className="text-gray-600">Manage system settings and administrative tools</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Settings</h1>
+                <p className="text-sm sm:text-base text-gray-600 hidden sm:block">Manage system settings and administrative tools</p>
               </div>
             </div>
           </div>
 
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200 mb-8">
-            <nav className="-mb-px flex space-x-8">
+          <div className="border-b border-gray-200 mb-6 sm:mb-8">
+            <nav className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('workflow')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-h-[44px] flex items-center ${
                   activeTab === 'workflow'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <DocumentTextIcon className="h-5 w-5 inline mr-2" />
-                Invoice Workflow
+                <DocumentTextIcon className="h-5 w-5 sm:inline sm:mr-2" />
+                <span className="hidden sm:inline">Invoice Workflow</span>
               </button>
               <button
                 onClick={() => setActiveTab('database')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-h-[44px] flex items-center ${
                   activeTab === 'database'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <CircleStackIcon className="h-5 w-5 inline mr-2" />
-                Database Tools
+                <CircleStackIcon className="h-5 w-5 sm:inline sm:mr-2" />
+                <span className="hidden sm:inline">Database Tools</span>
               </button>
               <button
                 onClick={() => setActiveTab('system')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-h-[44px] flex items-center ${
                   activeTab === 'system'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <ClockIcon className="h-5 w-5 inline mr-2" />
-                System Info
+                <ClockIcon className="h-5 w-5 sm:inline sm:mr-2" />
+                <span className="hidden sm:inline">System Info</span>
               </button>
             </nav>
           </div>
@@ -230,7 +230,8 @@ export default function SettingsPage() {
                     <div className="space-y-4">
                       {filteredInvoices.map((invoice) => (
                         <div key={invoice.id} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-center justify-between">
+                          {/* Desktop layout - horizontal */}
+                          <div className="hidden sm:flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-4">
                                 <div>
@@ -257,6 +258,42 @@ export default function SettingsPage() {
                                   onClick={() => updateInvoiceStatus(invoice.id, status)}
                                   disabled={invoice.current_status === status}
                                   className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                                    invoice.current_status === status
+                                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                      : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                                  }`}
+                                >
+                                  {status}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Mobile layout - stacked */}
+                          <div className="sm:hidden space-y-3">
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-sm font-medium text-gray-900">
+                                  {invoice.invoice_number}
+                                </h3>
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(invoice.current_status)}`}>
+                                  {invoice.current_status}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-500">{invoice.client_name}</p>
+                              <p className="text-sm font-medium text-gray-900 mt-1">
+                                {formatCurrency(invoice.total_amount)}
+                              </p>
+                            </div>
+                            
+                            {/* Status buttons on new line for mobile */}
+                            <div className="grid grid-cols-2 gap-2">
+                              {Object.values(InvoiceStatus).map((status) => (
+                                <button
+                                  key={status}
+                                  onClick={() => updateInvoiceStatus(invoice.id, status)}
+                                  disabled={invoice.current_status === status}
+                                  className={`px-3 py-2 text-xs font-medium rounded-md transition-colors min-h-[44px] ${
                                     invoice.current_status === status
                                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                       : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
@@ -308,11 +345,11 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="border border-gray-200 rounded-lg p-4">
                       <h3 className="text-sm font-medium text-gray-900 mb-2">Database Statistics</h3>
                       <p className="text-sm text-gray-600 mb-4">View database table statistics and record counts</p>
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                      <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium min-h-[44px]">
                         View Stats
                       </button>
                     </div>
@@ -320,7 +357,7 @@ export default function SettingsPage() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <h3 className="text-sm font-medium text-gray-900 mb-2">Data Export</h3>
                       <p className="text-sm text-gray-600 mb-4">Export data for backup or analysis</p>
-                      <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                      <button className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium min-h-[44px]">
                         Export Data
                       </button>
                     </div>
@@ -328,7 +365,7 @@ export default function SettingsPage() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <h3 className="text-sm font-medium text-gray-900 mb-2">Query Console</h3>
                       <p className="text-sm text-gray-600 mb-4">Execute custom database queries</p>
-                      <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                      <button className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium min-h-[44px]">
                         Open Console
                       </button>
                     </div>
@@ -336,7 +373,7 @@ export default function SettingsPage() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <h3 className="text-sm font-medium text-gray-900 mb-2">System Logs</h3>
                       <p className="text-sm text-gray-600 mb-4">View application and error logs</p>
-                      <button className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                      <button className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium min-h-[44px]">
                         View Logs
                       </button>
                     </div>
@@ -357,7 +394,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <h3 className="text-sm font-medium text-gray-900 mb-3">Application Info</h3>
                       <dl className="space-y-2">
