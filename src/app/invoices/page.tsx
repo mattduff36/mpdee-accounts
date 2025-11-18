@@ -377,7 +377,8 @@ export default function InvoicesPage() {
                   {invoices.map((invoice) => (
                     <li key={invoice.id}>
                       <div className="px-4 py-4">
-                        <div className="flex items-center justify-between">
+                        {/* Desktop layout - horizontal */}
+                        <div className="hidden sm:flex items-center justify-between">
                           <div 
                             className="flex items-center flex-1 cursor-pointer hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors"
                             onClick={() => setSelectedInvoiceId(invoice.id)}
@@ -491,6 +492,128 @@ export default function InvoicesPage() {
                               <button
                                 onClick={() => setDeleteInvoiceId(invoice.id)}
                                 className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors"
+                                title="Delete Invoice"
+                              >
+                                <TrashIcon className="h-6 w-6" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Mobile layout - stacked */}
+                        <div className="sm:hidden space-y-3">
+                          <div 
+                            className="cursor-pointer hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors"
+                            onClick={() => setSelectedInvoiceId(invoice.id)}
+                          >
+                            <div className="flex items-center">
+                              <ClientAvatar client={invoice.client} />
+                              <div className="ml-3 flex-1">
+                                <div className="flex items-center justify-between">
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {invoice.invoice_number}
+                                  </p>
+                                  {getStatusBadge(invoice.status)}
+                                </div>
+                                <p className="text-sm text-gray-500 mt-1">
+                                  {invoice.client.name}
+                                </p>
+                                <p className="text-sm font-medium text-gray-900 mt-1">
+                                  {formatCurrency(invoice.total_amount)}
+                                </p>
+                                <div className="flex items-center mt-1 text-xs text-gray-400">
+                                  <span>Created {formatDate(invoice.created_at.toString())}</span>
+                                  {invoice.due_date && (
+                                    <>
+                                      <span className="mx-2">•</span>
+                                      <span>Due {formatDate(invoice.due_date.toString())}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action buttons on new line for mobile */}
+                          <div className="flex items-center justify-start gap-2 px-2">
+                            <button
+                              onClick={() => router.push(`/invoices/${invoice.id}`)}
+                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                              title={invoice.status === InvoiceStatus.DRAFT ? 'Edit Invoice' : 'View Invoice'}
+                            >
+                              <PencilIcon className="h-6 w-6" />
+                            </button>
+                            {invoice.status === InvoiceStatus.DRAFT && (
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    const response = await fetch(`/api/invoices/${invoice.id}/send`, {
+                                      method: 'POST',
+                                    });
+                                    if (response.ok) {
+                                      setToast({ message: 'Invoice sent successfully!', type: 'success' });
+                                      fetchInvoices();
+                                    } else {
+                                      setToast({ message: 'Failed to send invoice', type: 'error' });
+                                    }
+                                  } catch (error) {
+                                    setToast({ message: 'Failed to send invoice', type: 'error' });
+                                  }
+                                }}
+                                className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                title="Send Invoice"
+                              >
+                                <PaperAirplaneIcon className="h-6 w-6" />
+                              </button>
+                            )}
+                            {(invoice.status === InvoiceStatus.SENT || invoice.status === InvoiceStatus.OVERDUE) && (
+                              <>
+                                <button
+                                  onClick={() => handleMarkAsPaid(invoice.id)}
+                                  disabled={updatingStatusId === invoice.id}
+                                  className="text-green-600 hover:text-green-900 p-2 rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                  title="Mark as Paid"
+                                >
+                                  {updatingStatusId === invoice.id ? (
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                                  ) : (
+                                    <CheckCircleIcon className="h-6 w-6" />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/invoices/${invoice.id}/send`, {
+                                        method: 'POST',
+                                      });
+                                      if (response.ok) {
+                                        setToast({ message: 'Invoice resent successfully!', type: 'success' });
+                                        fetchInvoices();
+                                      } else {
+                                        setToast({ message: 'Failed to resend invoice', type: 'error' });
+                                      }
+                                    } catch (error) {
+                                      setToast({ message: 'Failed to resend invoice', type: 'error' });
+                                    }
+                                  }}
+                                  className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                  title="Resend Invoice"
+                                >
+                                  <PaperAirplaneIcon className="h-6 w-6" />
+                                </button>
+                              </>
+                            )}
+                            <button
+                              onClick={() => window.open(`/api/invoices/${invoice.id}/pdf`, '_blank')}
+                              className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                              title="Download PDF"
+                            >
+                              <ArrowDownTrayIcon className="h-6 w-6" />
+                            </button>
+                            {invoice.status === InvoiceStatus.DRAFT && (
+                              <button
+                                onClick={() => setDeleteInvoiceId(invoice.id)}
+                                className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                                 title="Delete Invoice"
                               >
                                 <TrashIcon className="h-6 w-6" />
