@@ -153,35 +153,73 @@ export default function ExpensesPage() {
                 <ul className="divide-y divide-gray-200">
                   {expenses.map((exp) => (
                     <li key={exp.id}>
-                      <div className="px-4 py-4 flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-gray-900 truncate">{exp.description}</p>
-                            <p className="text-sm font-semibold text-gray-900">{formatCurrency(exp.amount)}</p>
+                      <div className="px-4 py-4">
+                        {/* Desktop layout - horizontal */}
+                        <div className="hidden sm:flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm font-medium text-gray-900 truncate">{exp.description}</p>
+                              <p className="text-sm font-semibold text-gray-900">{formatCurrency(exp.amount)}</p>
+                            </div>
+                            <div className="mt-1 text-sm text-gray-500 flex items-center gap-2">
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{exp.category}</span>
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{exp.business_area}</span>
+                              <span>•</span>
+                              <span>{formatDate(exp.date)}</span>
+                              {exp.notes ? (<><span>•</span><span className="truncate">{exp.notes}</span></>) : null}
+                            </div>
                           </div>
-                          <div className="mt-1 text-sm text-gray-500 flex items-center gap-2">
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{exp.category}</span>
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{exp.business_area}</span>
-                            <span>•</span>
-                            <span>{formatDate(exp.date)}</span>
-                            {exp.notes ? (<><span>•</span><span className="truncate">{exp.notes}</span></>) : null}
+                          <div className="flex items-center space-x-3 ml-4">
+                            <Link
+                              href={`/expenses/${exp.id}`}
+                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors border border-indigo-300"
+                              title="Edit expense"
+                            >
+                              <PencilIcon className="h-6 w-6" />
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(exp.id)}
+                              className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors border border-red-300"
+                              title="Delete expense"
+                            >
+                              <TrashIcon className="h-6 w-6" />
+                            </button>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <Link
-                            href={`/expenses/${exp.id}`}
-                            className="text-indigo-600 hover:text-indigo-900 p-1"
-                            title="Edit expense"
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(exp.id)}
-                            className="text-red-600 hover:text-red-900 p-1"
-                            title="Delete expense"
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
+
+                        {/* Mobile layout - stacked */}
+                        <div className="sm:hidden space-y-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm font-medium text-gray-900 truncate">{exp.description}</p>
+                              <p className="text-sm font-semibold text-gray-900">{formatCurrency(exp.amount)}</p>
+                            </div>
+                            <div className="mt-1 text-sm text-gray-500 flex flex-wrap items-center gap-2">
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{exp.category}</span>
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{exp.business_area}</span>
+                              <span>•</span>
+                              <span>{formatDate(exp.date)}</span>
+                              {exp.notes ? (<><span>•</span><span className="truncate">{exp.notes}</span></>) : null}
+                            </div>
+                          </div>
+
+                          {/* Action buttons on new line for mobile */}
+                          <div className="flex items-center justify-between px-1">
+                            <Link
+                              href={`/expenses/${exp.id}`}
+                              className="flex-1 text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors min-h-[44px] flex items-center justify-center border border-indigo-300 mx-0.5"
+                              title="Edit expense"
+                            >
+                              <PencilIcon className="h-6 w-6" />
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(exp.id)}
+                              className="flex-1 text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors min-h-[44px] flex items-center justify-center border border-red-300 mx-0.5"
+                              title="Delete expense"
+                            >
+                              <TrashIcon className="h-6 w-6" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </li>

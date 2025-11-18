@@ -150,48 +150,92 @@ export default function ClientsPage() {
                 <ul className="divide-y divide-gray-200">
                   {clients.map((client) => (
                     <li key={client.id}>
-                      <div className="px-4 py-4 flex items-center justify-between">
-                        <div className="flex items-center">
-                          <ClientAvatar client={client} />
-                          <div className="ml-4">
-                            <div className="flex items-center">
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {client.name}
+                      <div className="px-4 py-4">
+                        {/* Desktop layout - horizontal */}
+                        <div className="hidden sm:flex items-center justify-between">
+                          <div className="flex items-center">
+                            <ClientAvatar client={client} />
+                            <div className="ml-4">
+                              <div className="flex items-center">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {client.name}
+                                </p>
+                              </div>
+                              <div className="flex items-center mt-1">
+                                <p className="text-sm text-gray-500 truncate">
+                                  {client.email}
+                                </p>
+                                {client.phone && (
+                                  <>
+                                    <span className="mx-2 text-gray-300">•</span>
+                                    <p className="text-sm text-gray-500 truncate">
+                                      {client.phone}
+                                    </p>
+                                  </>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-400">
+                                Created {formatDate(client.created_at.toString())}
                               </p>
                             </div>
-                            <div className="flex items-center mt-1">
-                              <p className="text-sm text-gray-500 truncate">
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <button
+                              onClick={() => router.push(`/clients/${client.id}`)}
+                              className="text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors border border-indigo-300"
+                              title="Edit Client"
+                            >
+                              <PencilIcon className="h-6 w-6" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteClientId(client.id)}
+                              className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors border border-red-300"
+                              title="Delete Client"
+                            >
+                              <TrashIcon className="h-6 w-6" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Mobile layout - stacked */}
+                        <div className="sm:hidden space-y-3">
+                          <div className="flex items-center">
+                            <ClientAvatar client={client} />
+                            <div className="ml-3 flex-1">
+                              <p className="text-sm font-medium text-gray-900">
+                                {client.name}
+                              </p>
+                              <p className="text-sm text-gray-500 mt-1">
                                 {client.email}
                               </p>
                               {client.phone && (
-                                <>
-                                  <span className="mx-2 text-gray-300">•</span>
-                                  <p className="text-sm text-gray-500 truncate">
-                                    {client.phone}
-                                  </p>
-                                </>
+                                <p className="text-sm text-gray-500 mt-1">
+                                  {client.phone}
+                                </p>
                               )}
+                              <p className="text-xs text-gray-400 mt-1">
+                                Created {formatDate(client.created_at.toString())}
+                              </p>
                             </div>
-                            <p className="text-xs text-gray-400">
-                              Created {formatDate(client.created_at.toString())}
-                            </p>
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => router.push(`/clients/${client.id}`)}
-                            className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors"
-                            title="Edit Client"
-                          >
-                            <PencilIcon className="h-5 w-5" />
-                          </button>
-                          <button
-                            onClick={() => setDeleteClientId(client.id)}
-                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                            title="Delete Client"
-                          >
-                            <TrashIcon className="h-5 w-5" />
-                          </button>
+
+                          {/* Action buttons on new line for mobile */}
+                          <div className="flex items-center justify-between px-1">
+                            <button
+                              onClick={() => router.push(`/clients/${client.id}`)}
+                              className="flex-1 text-indigo-600 hover:text-indigo-900 p-2 rounded hover:bg-indigo-50 transition-colors min-h-[44px] flex items-center justify-center border border-indigo-300 mx-0.5"
+                              title="Edit Client"
+                            >
+                              <PencilIcon className="h-6 w-6" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteClientId(client.id)}
+                              className="flex-1 text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 transition-colors min-h-[44px] flex items-center justify-center border border-red-300 mx-0.5"
+                              title="Delete Client"
+                            >
+                              <TrashIcon className="h-6 w-6" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </li>
