@@ -23,6 +23,7 @@ export default function AccountsDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [lastLoginDate, setLastLoginDate] = useState<string>('');
   const router = useRouter();
 
   const fetchStats = async () => {
@@ -72,6 +73,23 @@ export default function AccountsDashboard() {
     checkAuth();
   }, [router]);
 
+  useEffect(() => {
+    // Get last login date from localStorage
+    const storedLastLogin = localStorage.getItem('lastLoginDate');
+    if (storedLastLogin) {
+      setLastLoginDate(storedLastLogin);
+    } else {
+      // If no stored date, set current date and store it
+      const currentDate = new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      localStorage.setItem('lastLoginDate', currentDate);
+      setLastLoginDate(currentDate);
+    }
+  }, []);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
@@ -107,6 +125,11 @@ export default function AccountsDashboard() {
               <h2 className="text-xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
                 Dashboard
               </h2>
+              {lastLoginDate && (
+                <p className="mt-1 text-sm text-gray-500">
+                  Last logged in on {lastLoginDate}
+                </p>
+              )}
             </div>
           </div>
 
