@@ -37,7 +37,7 @@ export default function ImportExpensesPage() {
   return (
     <>
       <Navigation />
-      <div className="pt-20 pb-10">
+      <div className="pt-4 pb-24 sm:pt-20 sm:pb-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-gray-900">Import Expenses from CSV</h1>
           <p className="mt-2 text-sm text-gray-600">Upload a bank statement CSV. We will parse transactions so you can review and add expenses.</p>

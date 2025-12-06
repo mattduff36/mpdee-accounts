@@ -61,7 +61,7 @@ export default function NewExpensePage() {
   return (
     <>
       <Navigation />
-      <div className="pt-20 pb-10">
+      <div className="pt-4 pb-24 sm:pt-20 sm:pb-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-gray-900">Add Expense</h2>
           <form onSubmit={handleSubmit} className="mt-6 space-y-6 bg-white p-6 rounded-lg shadow">

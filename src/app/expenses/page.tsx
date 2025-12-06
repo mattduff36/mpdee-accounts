@@ -84,7 +84,7 @@ export default function ExpensesPage() {
   return (
     <>
       <Navigation />
-      <div className="pt-20 pb-10">
+      <div className="pt-4 pb-24 sm:pt-20 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="flex-1 min-w-0">

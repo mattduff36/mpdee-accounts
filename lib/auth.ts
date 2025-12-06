@@ -10,7 +10,7 @@ const JWT_SECRET = new TextEncoder().encode(
 );
 
 // Session configuration
-const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 const COOKIE_NAME = 'auth-session';
 
 export async function validateCredentials(credentials: LoginCredentials): Promise<boolean> {
