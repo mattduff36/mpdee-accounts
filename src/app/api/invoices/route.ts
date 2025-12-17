@@ -8,21 +8,34 @@ async function generateInvoiceNumber(): Promise<string> {
   const prefix = process.env.INVOICE_PREFIX || 'INV';
   const year = new Date().getFullYear();
   
-  // Get the count of invoices this year
-  const startOfYear = new Date(year, 0, 1);
-  const endOfYear = new Date(year, 11, 31, 23, 59, 59);
-  
-  const count = await prisma.invoice.count({
+  // Get all invoices for this year and find the highest number
+  const invoices = await prisma.invoice.findMany({
     where: {
-      created_at: {
-        gte: startOfYear,
-        lte: endOfYear,
+      invoice_number: {
+        startsWith: `${prefix}-${year}-`,
       },
     },
+    select: {
+      invoice_number: true,
+    },
+    orderBy: {
+      invoice_number: 'desc',
+    },
+    take: 1,
   });
   
-  const nextNumber = (count + 1).toString().padStart(3, '0');
-  return `${prefix}-${year}-${nextNumber}`;
+  let nextNumber = 1;
+  
+  if (invoices.length > 0) {
+    // Extract the number from the last invoice (e.g., "INV-2025-003" -> 3)
+    const lastInvoiceNumber = invoices[0].invoice_number;
+    const match = lastInvoiceNumber.match(/-(\d+)$/);
+    if (match) {
+      nextNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+  
+  return `${prefix}-${year}-${nextNumber.toString().padStart(3, '0')}`;
 }
 
 // GET /api/invoices - List all invoices with optional filtering and pagination
