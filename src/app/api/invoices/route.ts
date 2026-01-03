@@ -150,9 +150,9 @@ export async function POST(request: NextRequest) {
 
     // Validate items
     for (const item of normalizedItems) {
-      if (!item.description || item.quantity <= 0 || item.rate <= 0) {
+      if (!item.description || item.quantity <= 0) {
         return NextResponse.json(
-          { success: false, error: 'All items must have description, quantity > 0, and rate > 0' },
+          { success: false, error: 'All items must have description and quantity > 0' },
           { status: 400 }
         );
       }
@@ -238,4 +238,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
