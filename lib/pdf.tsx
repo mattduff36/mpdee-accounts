@@ -259,7 +259,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     leftYPos += 4;
     doc.setFontSize(10);
     doc.setTextColor(...blackColor);
-    doc.text('Matthew Duffill', leftColumnX, leftYPos);
+    doc.text('Matthew Duffill trading as MPDEE Group', leftColumnX, leftYPos);
     leftYPos += 7;
 
     doc.setFontSize(9);
@@ -268,7 +268,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     leftYPos += 4;
     doc.setFontSize(10);
     doc.setTextColor(...blackColor);
-    doc.text('04-29-09', leftColumnX, leftYPos);
+    doc.text('04-00-05', leftColumnX, leftYPos);
     leftYPos += 7;
 
     doc.setFontSize(9);
@@ -277,7 +277,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     leftYPos += 4;
     doc.setFontSize(10);
     doc.setTextColor(...blackColor);
-    doc.text('38328313', leftColumnX, leftYPos);
+    doc.text('88760521', leftColumnX, leftYPos);
 
     // Right column - Bank address (vertically centered and with 1.25 line spacing)
     const leftColumnStartY = yPos + 2;
