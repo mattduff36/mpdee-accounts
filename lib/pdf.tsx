@@ -285,7 +285,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     const leftColumnTotalHeight = leftColumnEndY - leftColumnStartY;
     
     const bankLineSpacing = 5; // 1.25 line spacing (4 * 1.25 = 5)
-    const bankContentHeight = 3 * bankLineSpacing; // 3 gaps between 4 lines
+    const bankContentHeight = 4 * bankLineSpacing; // 4 gaps between 5 lines
     
     // Center the bank address content within the left column height
     const bankStartY = leftColumnStartY + (leftColumnTotalHeight - bankContentHeight) / 2;
@@ -297,11 +297,13 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     bankYPos += bankLineSpacing;
     doc.setFontSize(10);
     doc.setTextColor(...blackColor);
-    doc.text('Revolut Ltd', paymentRightColumnX, bankYPos);
+    doc.text('Monzo Bank Ltd', paymentRightColumnX, bankYPos);
     bankYPos += bankLineSpacing;
-    doc.text('7 Westferry Circus, E14 4HD', paymentRightColumnX, bankYPos);
+    doc.text('Broadwalk House', paymentRightColumnX, bankYPos);
     bankYPos += bankLineSpacing;
-    doc.text('London, United Kingdom', paymentRightColumnX, bankYPos);
+    doc.text('5 Appold Street', paymentRightColumnX, bankYPos);
+    bankYPos += bankLineSpacing;
+    doc.text('London, EC2A 2AG', paymentRightColumnX, bankYPos);
 
     yPos = paymentBoxY + paymentBoxHeight + 10;
 
