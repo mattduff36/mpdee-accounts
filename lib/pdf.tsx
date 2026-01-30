@@ -56,30 +56,77 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     const blackColor = [0, 0, 0] as const;
     const grayColor = [107, 114, 128] as const; // #6b7280
 
-    let yPos = 25; // Start with more top margin
+    // Page dimensions
+    const pageHeight = 297; // A4 height in mm
+    const bottomMargin = 20; // Reserve space at bottom of page
+    const maxYPos = pageHeight - bottomMargin;
 
-    // Header - Company logo (left side)
-    let logoHeight = 0;
+    // Cache logo data for use across pages
+    let logoBase64: string | null = null;
     try {
       const logoPath = path.join(process.cwd(), 'public', 'images', 'Invoice-logo-new.png');
       if (fs.existsSync(logoPath)) {
         const logoData = fs.readFileSync(logoPath);
-        const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`;
-        
-        // Set logo dimensions - increased size for better presence
-        const logoWidth = 60;
-        
-        doc.addImage(logoBase64, 'PNG', 20, yPos, logoWidth, 0);
-        logoHeight = 25; // Estimate logo height for spacing
-      } else {
-        // Fallback to text if logo not found
-        doc.setFontSize(20);
-        doc.setTextColor(...brandColor);
-        doc.text(company.name, 20, yPos);
-        logoHeight = 15;
+        logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`;
       }
     } catch (error) {
-      console.warn('Failed to load logo, using text fallback:', error);
+      console.warn('Failed to load logo:', error);
+    }
+
+    // Function to draw page header (for continuation pages)
+    const drawContinuationHeader = () => {
+      const headerY = 15;
+      
+      // Small logo or company name
+      if (logoBase64) {
+        doc.addImage(logoBase64, 'PNG', 20, headerY, 40, 0);
+      } else {
+        doc.setFontSize(14);
+        doc.setTextColor(...brandColor);
+        doc.text(company.name, 20, headerY);
+      }
+      
+      // Invoice number on right
+      doc.setFontSize(11);
+      doc.setTextColor(...grayColor);
+      doc.text(`Invoice: ${invoice.invoice_number}`, 190, headerY + 5, { align: 'right' });
+      
+      // Divider line
+      doc.setDrawColor(...brandColor);
+      doc.setLineWidth(0.5);
+      doc.line(20, headerY + 12, 190, headerY + 12);
+      
+      return headerY + 20; // Return Y position after header
+    };
+
+    // Function to draw table header
+    const drawTableHeader = (yPosition: number) => {
+      const tableHeaderHeight = 10;
+      doc.setFillColor(...brandColor);
+      doc.rect(20, yPosition, 170, tableHeaderHeight, 'F');
+      
+      doc.setFontSize(10);
+      doc.setTextColor(255, 255, 255);
+      doc.text('Description', 25, yPosition + 6.5);
+      doc.text('Qty', 125, yPosition + 6.5, { align: 'center' });
+      doc.text('Rate', 150, yPosition + 6.5, { align: 'center' });
+      doc.text('Amount', 185, yPosition + 6.5, { align: 'right' });
+      
+      return yPosition + tableHeaderHeight;
+    };
+
+    let yPos = 25; // Start with more top margin
+
+    // Header - Company logo (left side)
+    let logoHeight = 0;
+    if (logoBase64) {
+      // Set logo dimensions - increased size for better presence
+      const logoWidth = 60;
+      
+      doc.addImage(logoBase64, 'PNG', 20, yPos, logoWidth, 0);
+      logoHeight = 25; // Estimate logo height for spacing
+    } else {
+      // Fallback to text if logo not found
       doc.setFontSize(20);
       doc.setTextColor(...brandColor);
       doc.text(company.name, 20, yPos);
@@ -148,17 +195,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     yPos += 8; // Further reduced spacing before table
 
     // Professional items table header
-    const tableHeaderHeight = 10;
-    doc.setFillColor(...brandColor);
-    doc.rect(20, yPos, 170, tableHeaderHeight, 'F');
-    
-    doc.setFontSize(10);
-    doc.setTextColor(255, 255, 255);
-    doc.text('Description', 25, yPos + 6.5);
-    doc.text('Qty', 125, yPos + 6.5, { align: 'center' });
-    doc.text('Rate', 150, yPos + 6.5, { align: 'center' });
-    doc.text('Amount', 185, yPos + 6.5, { align: 'right' });
-    yPos += tableHeaderHeight;
+    yPos = drawTableHeader(yPos);
 
     // Items table rows with improved styling and word wrapping
     doc.setTextColor(...blackColor);
@@ -180,6 +217,15 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
       doc.setFontSize(10);
       const descriptionLines = doc.splitTextToSize(fullDescription, maxDescriptionWidth);
       const actualRowHeight = Math.max(baseRowHeight, descriptionLines.length * 4 + 4);
+      
+      // Check if this item will fit on the current page
+      // Need to account for item height + space for totals section (approximately 50mm)
+      if (yPos + actualRowHeight > maxYPos - 50) {
+        // Add new page
+        doc.addPage();
+        yPos = drawContinuationHeader();
+        yPos = drawTableHeader(yPos);
+      }
       
       // Alternating row colors for better readability
       if (index % 2 === 1) {
@@ -214,6 +260,13 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<ArrayBuf
     });
 
     yPos += 15;
+    
+    // Check if we need a new page for the totals and footer section (approximately 65mm needed)
+    if (yPos + 65 > maxYPos) {
+      doc.addPage();
+      yPos = drawContinuationHeader();
+      yPos += 10;
+    }
 
     // Professional total section with background
     const totalSectionY = yPos;
