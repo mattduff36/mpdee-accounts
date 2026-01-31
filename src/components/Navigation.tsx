@@ -49,8 +49,94 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Desktop Navigation - Top */}
-      <nav className="hidden sm:block fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200">
+      {/* Desktop Navigation - Sidebar */}
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:w-64 lg:bg-white lg:border-r lg:border-gray-200 lg:flex lg:flex-col">
+        {/* Logo */}
+        <div className="flex items-center h-16 px-6 border-b border-gray-200">
+          <Link href="/" className="flex items-center">
+            <img
+              src="/images/favicon/android-chrome-192x192.png"
+              alt="MPDEE Accounts"
+              className="h-8 w-auto"
+            />
+            <span className="ml-3 text-xl font-semibold text-gray-900">Accounts</span>
+          </Link>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+          <Link
+            href="/"
+            className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+              pathname === '/'
+                ? 'bg-indigo-50 text-indigo-700'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <HomeIcon className={`h-5 w-5 mr-3 ${pathname === '/' ? 'text-indigo-600' : 'text-gray-400'}`} />
+            Dashboard
+          </Link>
+          <Link
+            href="/clients"
+            className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+              pathname?.startsWith('/clients')
+                ? 'bg-blue-50 text-blue-700'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <UsersIcon className={`h-5 w-5 mr-3 ${pathname?.startsWith('/clients') ? 'text-blue-600' : 'text-gray-400'}`} />
+            Clients
+          </Link>
+          <Link
+            href="/invoices"
+            className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+              pathname?.startsWith('/invoices')
+                ? 'bg-green-50 text-green-700'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <DocumentTextIcon className={`h-5 w-5 mr-3 ${pathname?.startsWith('/invoices') ? 'text-green-600' : 'text-gray-400'}`} />
+            Invoices
+          </Link>
+          <Link
+            href="/expenses"
+            className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+              pathname?.startsWith('/expenses')
+                ? 'bg-orange-50 text-orange-700'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <BanknotesIcon className={`h-5 w-5 mr-3 ${pathname?.startsWith('/expenses') ? 'text-orange-600' : 'text-gray-400'}`} />
+            Expenses
+          </Link>
+        </nav>
+
+        {/* Bottom Section */}
+        <div className="p-4 border-t border-gray-200 space-y-2">
+          <Link
+            href="/settings"
+            className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+              pathname?.startsWith('/settings')
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <CogIcon className="h-5 w-5 mr-3 text-gray-400" />
+            Settings
+          </Link>
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 transition-all disabled:opacity-50"
+          >
+            <ArrowRightStartOnRectangleIcon className="h-5 w-5 mr-3" />
+            {isLoggingOut ? 'Logging out...' : 'Logout'}
+          </button>
+        </div>
+      </aside>
+
+      {/* Desktop Navigation - Top Bar (Medium screens) */}
+      <nav className="hidden sm:hidden lg:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
             {/* Logo - Left */}
@@ -109,7 +195,7 @@ export default function Navigation() {
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="inline-flex bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoggingOut ? (
                   <div className="flex items-center">

@@ -72,10 +72,8 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-          <div className="flex-1 max-w-7xl mx-auto w-full">
-            {children}
-          </div>
+        <div className="min-h-screen bg-gray-50">
+          {children}
           <Footer />
         </div>
       </body>
