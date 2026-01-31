@@ -1,0 +1,15 @@
+# Git attributes for MPDEE Accounts
+
+# Treat text files appropriately
+*.text eol=lf
+*.md eol=lf
+*.json eol=lf
+*.ts eol=lf
+*.tsx eol=lf
+*.js eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
